@@ -56,7 +56,6 @@ export function GameCanvas({
         display: 'block',
         margin: '0 auto',
         cursor: 'pointer',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
         borderRadius: '12px',
       }}
     />
