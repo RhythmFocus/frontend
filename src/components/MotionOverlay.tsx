@@ -17,6 +17,9 @@ const MotionOverlay: React.FC = () => {
   const [clapDetected, setClapDetected] = useState(false);
 
   // 박수 인식 알고리즘용 Ref 변수
+  const prevHandCount = useRef(0);      // 이전 프레임 손 개수
+  const prevDistRatio = useRef(10.0);   // 이전 프레임 거리 비율
+  const prevVelocity = useRef(0);       // 이전 프레임 속도 (변화량)
   const clapCooldown = useRef(false);   // 중복 인식 방지
 
   // 거리 계산 헬퍼
@@ -80,9 +83,51 @@ const MotionOverlay: React.FC = () => {
         });
       });
     }
+
+    //  박수를 인식하는 부분
+    if (!clapCooldown.current) {
+
+      // Case A: 손이 2개일 때 (가까워지는 중인지 확인)
+      if (currentHandCount === 2) {
+        const hand1 = currentHands[0];
+        const hand2 = currentHands[1];
+
+        // 손 크기(Reference) 측정 (손목~중지) -> 상대적인 거리를 재기 위해
+        const size = (getDistance(hand1[0], hand1[9]) + getDistance(hand2[0], hand2[9])) / 2;
+        // 두 손목 사이 거리
+        const dist = getDistance(hand1[0], hand2[0]);
+
+        // 비율 계산
+        const currentRatio = dist / size;
+
+        // 속도(Velocity) 계산: (현재 - 과거). 음수면 가까워짐, 양수면 멀어짐
+        const velocity = currentRatio - prevDistRatio.current;
+
+        // Ratio가 임곗값 아래고, 빠르게 가까워지는 중(-0.05)이라면 박수로 인정
+        // 멀어질 때(velocity > 0)는 인식 안 함
+        if (currentRatio < 0.8 && velocity < -0.05) {
+             triggerClap();
+        }
+
+        // 상태 업데이트
+        prevDistRatio.current = currentRatio;
+        prevVelocity.current = velocity;
+      }
+      // Case B: 손이 사라짐 (손이 2개 미만, 이전 인식 손 개수가 2개)
+      else if (currentHandCount < 2 && prevHandCount.current === 2) {
+          // 사라지기 직전에 거리가 가까웠고(3.0 미만), 빠르게 다가오고 있었다면(-0.1 미만)
+          if (prevDistRatio.current < 3.0 && prevVelocity.current < -0.1) {
+              triggerClap();
+              // 중복 방지 리셋
+              prevDistRatio.current = 10.0;
+          }
+      }
+    }
+
+    prevHandCount.current = currentHandCount;
   }, [landmarks]);
 
- return (
+  return (
     <div style={styles.container}>
       <div style={styles.statusBadge}>
         {isLoaded ? "Motion Ready" : "Loading Model..."}
