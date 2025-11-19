@@ -52,24 +52,24 @@ export class CanvasRenderer {
   }
 
   drawBackground() {
-    const gradient = this.ctx.createLinearGradient(0, 0, 0, this.height);
-    gradient.addColorStop(0, '#7dd3fc');
-    gradient.addColorStop(1, '#38bdf8');
-    this.ctx.fillStyle = gradient;
+    this.ctx.fillStyle = '#c7f8f5'; 
     this.ctx.fillRect(0, 0, this.width, this.height);
-  }
+}
+
 
   drawSingleLane() {
     const y = this.HIGHWAY_TOP;
     
     // 트랙 배경
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-    this.ctx.fillRect(50, y, this.width - 100, this.HIGHWAY_HEIGHT);
+    this.ctx.beginPath();
+    this.ctx.roundRect(50, y, this.width - 100, this.HIGHWAY_HEIGHT, 60);
+    this.ctx.fill();
     
     // 트랙 테두리
     this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
     this.ctx.lineWidth = 3;
-    this.ctx.strokeRect(50, y, this.width - 100, this.HIGHWAY_HEIGHT);
+    this.ctx.stroke();
     
     // 트랙 위아래 라인
     this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
@@ -106,17 +106,8 @@ export class CanvasRenderer {
 
   drawCharacter(x: number, isHitting: boolean) {
     const y = this.HIGHWAY_TOP - 120;
-    const charWidth = 150;
-    const charHeight = 150;
-
-    if (!this.imagesLoaded) {
-      // 이미지 로딩 중이면 이모지로 대체
-      this.ctx.font = '120px Arial';
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.fillText(isHitting ? '🔨' : '🐮', x, y);
-      return;
-    }
+    const charWidth = 300;
+    const charHeight = 200;
 
     const img = isHitting ? this.characterHitImg : this.characterIdleImg;
     if (img) {
