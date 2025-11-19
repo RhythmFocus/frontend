@@ -87,17 +87,10 @@ const MotionOverlay: React.FC = () => {
 
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
-    position: 'fixed',
-    bottom: '20px',
-    left: '20px',
-    width: '320px', // 조금 더 키움
-    height: '240px',
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    borderRadius: '12px',
+    position: 'relative',
+    width: '100%',
+    height: '100%',
     overflow: 'hidden',
-    zIndex: 9999,
-    border: '2px solid rgba(255,255,255,0.2)',
-    boxShadow: '0 4px 15px rgba(0,0,0,0.5)',
     display: 'flex',
     flexDirection: 'column',
   },
