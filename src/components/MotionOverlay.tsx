@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHandTracking } from '../core/useHandTracking';
 
 // 손가락 뼈대 연결 정보 (MediaPipe 표준)
@@ -14,6 +14,7 @@ const HAND_CONNECTIONS = [
 const MotionOverlay: React.FC = () => {
   const { videoRef, isLoaded, landmarks } = useHandTracking();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [clapDetected, setClapDetected] = useState(false);
 
   // 랜드마크가 바뀔 때마다 캔버스에 그리기
   useEffect(() => {
