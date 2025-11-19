@@ -16,7 +16,21 @@ const MotionOverlay: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [clapDetected, setClapDetected] = useState(false);
 
-  // 랜드마크가 바뀔 때마다 캔버스에 그리기
+  // 박수 인식 알고리즘용 Ref 변수
+  const clapCooldown = useRef(false);   // 중복 인식 방지
+
+  // 박수 트리거 함수
+  const triggerClap = () => {
+    // console.log("Clap Detected!");
+    setClapDetected(true);
+    clapCooldown.current = true;
+
+    // UI 표시 시간 (0.2초)
+    setTimeout(() => setClapDetected(false), 200);
+    // 박수 인식 쿨다운 (일단은 0.4초)
+    setTimeout(() => { clapCooldown.current = false; }, 400);
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
@@ -34,12 +48,13 @@ const MotionOverlay: React.FC = () => {
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
 
-    // 감지된 손이 있으면 반복문으로 모두 그리기
-    if (landmarks.landmarks.length > 0) {
-      landmarks.landmarks.forEach((hand) => {
+    const currentHands = landmarks.landmarks;
+    const currentHandCount = currentHands.length;
 
-        // 1. 뼈대(Line) 그리기
-        ctx.strokeStyle = '#00FF00'; // 녹색 선
+    // 1. 손 그리기
+    if (currentHandCount > 0) {
+      currentHands.forEach((hand) => {
+        ctx.strokeStyle = '#00FF00';
         HAND_CONNECTIONS.forEach(([start, end]) => {
           const first = hand[start];
           const second = hand[end];
@@ -62,13 +77,12 @@ const MotionOverlay: React.FC = () => {
     }
   }, [landmarks]);
 
-  return (
+ return (
     <div style={styles.container}>
       <div style={styles.statusBadge}>
         {isLoaded ? "Motion Ready" : "Loading Model..."}
       </div>
 
-      {/* 비디오와 캔버스를 겹쳐서 배치 */}
       <div style={styles.videoWrapper}>
         <video
           ref={videoRef}
@@ -81,6 +95,9 @@ const MotionOverlay: React.FC = () => {
           ref={canvasRef}
           style={styles.media}
         />
+        {clapDetected && (
+          <div style={styles.clapIndicator}>CLAP!</div>
+        )}
       </div>
     </div>
   );
@@ -94,6 +111,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+    backgroundColor: '#000',
   },
   videoWrapper: {
     position: 'relative',
@@ -113,22 +131,26 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: 'absolute',
     top: '10px',
     left: '10px',
-    padding: '4px 10px',
-    background: 'rgba(0,0,0,0.7)',
+    padding: '6px 12px',
+    background: 'rgba(0,0,0,0.6)',
+    border: '1px solid #fff',
     color: '#fff',
     fontSize: '12px',
-    borderRadius: '15px',
+    borderRadius: '20px',
     zIndex: 10,
     fontWeight: 'bold',
   },
-  detectIndicator: {
+  clapIndicator: {
     position: 'absolute',
-    bottom: '10px',
-    right: '10px',
-    color: '#00ff00',
-    fontWeight: 'bold',
-    textShadow: '0 0 4px black',
-    zIndex: 10,
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    fontSize: '80px',
+    fontWeight: '900',
+    color: '#FFF200',
+    zIndex: 20,
+    textShadow: '0 0 20px rgba(255, 242, 0, 0.8)',
+    animation: 'popIn 0.1s ease-out',
   }
 };
 
