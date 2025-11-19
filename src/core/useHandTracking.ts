@@ -26,7 +26,13 @@ export const useHandTracking = () => {
             delegate: "GPU"
           },
           runningMode: "VIDEO",
-          numHands: 2 // 2개의 손까지 인식합니다.
+          numHands: 2, // 2개의 손까지 인식합니다.
+          // 탐지 민감도 (새로운 손인지)
+          minHandDetectionConfidence: 0.5,
+          // 존재 신뢰도 (진짜 손인지 최종적인 판단)
+          minHandPresenceConfidence: 0.3,
+          // 추적 민감도 조정 (이미 잡은 손을 다음 프레임에도 따라가는 정도)
+          minTrackingConfidence: 1
         });
 
         setIsLoaded(true);
@@ -44,7 +50,12 @@ export const useHandTracking = () => {
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 640, height: 480 }
+          // 인식될 영상의 해상도를 조정하는 부분
+          video: {
+              width: { ideal: 320 },
+              height: { ideal: 240 },
+              frameRate: { ideal: 60 }
+          }
         });
 
         if (videoRef.current) {
