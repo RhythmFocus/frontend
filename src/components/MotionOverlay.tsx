@@ -19,6 +19,11 @@ const MotionOverlay: React.FC = () => {
   // 박수 인식 알고리즘용 Ref 변수
   const clapCooldown = useRef(false);   // 중복 인식 방지
 
+  // 거리 계산 헬퍼
+  const getDistance = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
+    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+  };
+
   // 박수 트리거 함수
   const triggerClap = () => {
     // console.log("Clap Detected!");
