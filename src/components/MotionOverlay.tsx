@@ -35,8 +35,8 @@ const MotionOverlay: React.FC = () => {
 
     // UI 표시 시간 (0.2초)
     setTimeout(() => setClapDetected(false), 200);
-    // 박수 인식 쿨다운 (일단은 0.4초)
-    setTimeout(() => { clapCooldown.current = false; }, 400);
+    // 박수 인식 쿨다운 (일단은 0.3초)
+    setTimeout(() => { clapCooldown.current = false; }, 300);
   };
 
   useEffect(() => {
@@ -194,7 +194,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
+    transform: 'scaleX(-1)',
     fontSize: '80px',
     fontWeight: '900',
     color: '#FFF200',
