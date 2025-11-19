@@ -5,6 +5,7 @@ import JoinPage from './pages/JoinPage';
 import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage'; 
 import UserPage from './pages/UserPage';
+import CalibrationPage from './pages/CalibrationPage';
 import './App.css';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/main" element={<MainPage />} /> 
         <Route path="/game" element={<GamePage />} />
         <Route path="/user" element={<UserPage />} />
+        <Route path="/calibration" element={<CalibrationPage />} />
       </Routes>
     </BrowserRouter>
   );
