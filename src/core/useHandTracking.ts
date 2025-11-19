@@ -26,7 +26,7 @@ export const useHandTracking = () => {
             delegate: "GPU"
           },
           runningMode: "VIDEO",
-          numHands: 1
+          numHands: 2 // 2개의 손까지 인식합니다.
         });
 
         setIsLoaded(true);

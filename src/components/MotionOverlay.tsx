@@ -33,29 +33,30 @@ const MotionOverlay: React.FC = () => {
     ctx.lineWidth = 3;
     ctx.lineCap = 'round';
 
-    // 감지된 손이 있으면 그리기
+    // 감지된 손이 있으면 반복문으로 모두 그리기
     if (landmarks.landmarks.length > 0) {
-      const hand = landmarks.landmarks[0];
+      landmarks.landmarks.forEach((hand) => {
 
-      // 1. 뼈대(Line) 그리기
-      ctx.strokeStyle = '#00FF00'; // 녹색 선
-      HAND_CONNECTIONS.forEach(([start, end]) => {
-        const first = hand[start];
-        const second = hand[end];
+        // 1. 뼈대(Line) 그리기
+        ctx.strokeStyle = '#00FF00'; // 녹색 선
+        HAND_CONNECTIONS.forEach(([start, end]) => {
+          const first = hand[start];
+          const second = hand[end];
 
-        ctx.beginPath();
-        ctx.moveTo(first.x * canvas.width, first.y * canvas.height);
-        ctx.lineTo(second.x * canvas.width, second.y * canvas.height);
-        ctx.stroke();
-      });
+          ctx.beginPath();
+          ctx.moveTo(first.x * canvas.width, first.y * canvas.height);
+          ctx.lineTo(second.x * canvas.width, second.y * canvas.height);
+          ctx.stroke();
+        });
 
-      // 2. 관절(Point) 그리기
-      ctx.fillStyle = '#FF0000'; // 빨간 점
-      hand.forEach((point) => {
-        ctx.beginPath();
-        // x, y는 0~1 정규화된 값이므로 캔버스 크기를 곱해야 함
-        ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
-        ctx.fill();
+        // 2. 관절(Point) 그리기
+        ctx.fillStyle = '#FF0000'; // 빨간 점
+        hand.forEach((point) => {
+          ctx.beginPath();
+          // x, y는 0~1 정규화된 값이므로 캔버스 크기를 곱해야 함
+          ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
+          ctx.fill();
+        });
       });
     }
   }, [landmarks]);
