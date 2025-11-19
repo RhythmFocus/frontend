@@ -4,21 +4,21 @@ export class NoteGenerator {
   private currentBPM: number = 120;
   private readonly BASE_CONFIGS: Record<Difficulty, DifficultyConfig> = {
     easy: {
-      duration: 60000,
+      duration: 10000,
       interval: 1000,
       laneCount: 1,
       randomness: 0,
       bpm: 60,
     },
     normal: {
-      duration: 90000,
+      duration: 10000,
       interval: 600,
       laneCount: 1,
       randomness: 50,
       bpm: 100,
     },
     hard: {
-      duration: 120000,
+      duration: 10000,
       interval: 400,
       laneCount: 1,
       randomness: 100,
@@ -58,7 +58,6 @@ export class NoteGenerator {
     }
   }
 
-  // 기존 adjustDifficulty 메서드 (호환성 유지)
   adjustDifficulty(averageOffset: number, missRate: number): boolean {
     const TARGET_RANGE = 20;
     const HIGH_MISS_RATE = 0.3;
@@ -86,9 +85,10 @@ export class NoteGenerator {
   }
 
   getNextNote(): Note {
+    const maxRandomness = this.currentConfig.interval * 0.1;
     const randomOffset =
       this.currentConfig.randomness > 0
-        ? (Math.random() - 0.5) * 2 * this.currentConfig.randomness
+        ? (Math.random() - 0.5) * 2 * Math.min(this.currentConfig.randomness, maxRandomness)
         : 0;
 
     const note: Note = {
@@ -104,10 +104,6 @@ export class NoteGenerator {
   }
 
   syncToCurrentTime(currentTime: number): void {
-    if (this.nextNoteTime < currentTime) {
-      console.warn(`⚠️ 동기화: ${this.nextNoteTime} → ${currentTime + this.currentConfig.interval}ms`);
-      this.nextNoteTime = currentTime + this.currentConfig.interval;
-    }
   }
 
   getNextNoteTime(): number {
