@@ -28,11 +28,11 @@ export const useHandTracking = () => {
           runningMode: "VIDEO",
           numHands: 2, // 2개의 손까지 인식합니다.
           // 탐지 민감도 (새로운 손인지)
-          minHandDetectionConfidence: 0.5,
+          minHandDetectionConfidence: 0.4,
           // 존재 신뢰도 (진짜 손인지 최종적인 판단)
-          minHandPresenceConfidence: 0.3,
+          minHandPresenceConfidence: 0.4,
           // 추적 민감도 조정 (이미 잡은 손을 다음 프레임에도 따라가는 정도)
-          minTrackingConfidence: 1
+          minTrackingConfidence: 0.4
         });
 
         setIsLoaded(true);
@@ -50,10 +50,9 @@ export const useHandTracking = () => {
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          // 인식될 영상의 해상도를 조정하는 부분
           video: {
-              width: { ideal: 320 },
-              height: { ideal: 240 },
+              width: { ideal: 640 },
+              height: { ideal: 480 },
               frameRate: { ideal: 60 }
           }
         });
@@ -70,16 +69,12 @@ export const useHandTracking = () => {
     const predictLoop = () => {
       if (!handLandmarker || !videoRef.current) return;
 
-      // 비디오가 재생 중일 때만 감지
       if (videoRef.current.currentTime > 0 && !videoRef.current.paused) {
           const startTimeMs = performance.now();
           const result = handLandmarker.detectForVideo(videoRef.current, startTimeMs);
 
-          if (result.landmarks.length > 0) {
-              // 콘솔에 로그 찍는 코드(일단 주석처리)
-              // console.log("hands Detected:", result.landmarks[0]);
-             setLandmarks(result);
-          }
+          // 손이 없어도 상태를 업데이트하도록 변경
+          setLandmarks(result);
       }
       animationFrameId = requestAnimationFrame(predictLoop);
     };

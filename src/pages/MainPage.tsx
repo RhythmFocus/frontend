@@ -73,6 +73,12 @@ function MainPage() {
           <button style={styles.menuButton}>뽑기</button>
           <button style={styles.menuButton}>설정</button>
           <button style={styles.menuButton}>Language</button>
+          <button
+            onClick={() => navigate('/calibration')}
+            style={styles.menuButton}
+          >
+            <span>Calibration</span>
+          </button>
         </div>
       </div>
 
