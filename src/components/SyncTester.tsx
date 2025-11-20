@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { CanvasRenderer } from '../core/CanvasRenderer';
-import { Note, HitFeedback } from '../types/game.types';
+import { Note } from '../types/game.types';
 
 interface SyncTesterProps {
     onComplete: (offset: number) => void;
@@ -30,7 +30,6 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
     const startTimeRef = useRef<number>(0);
     const animationFrameRef = useRef<number>(0);
     const notesRef = useRef<Note[]>([]);
-    const feedbacksRef = useRef<HitFeedback[]>([]);
     const offsetsRef = useRef<number[]>([]);
     const beatIndexRef = useRef(0);
     const isCharacterHittingRef = useRef(false);
@@ -62,7 +61,6 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
 
         setIsRunning(true);
         offsetsRef.current = [];
-        feedbacksRef.current = [];
         beatIndexRef.current = -1;
 
         // 시작 시간 설정 (1초 대기 후 시작)
@@ -110,11 +108,8 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
             const visibleNotes = notesRef.current.filter(n => !n.isHit);
 
             // 피드백(PERFECT 등) 지속시간 체크 (1초 지나면 제거)
-            feedbacksRef.current = feedbacksRef.current.filter(f => now - f.timestamp < 1000);
-
             rendererRef.current.render(
-                visibleNotes,
-                feedbacksRef.current,
+                visibleNotes, [],
                 CONFIG.JUDGMENT_LINE_X,
                 isCharacterHittingRef.current
             );
@@ -165,18 +160,6 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
             const offset = now - targetNote.time; // 양수=Late, 음수=Early
             offsetsRef.current.push(offset);
             targetNote.isHit = true;
-
-            // 피드백 생성
-            const feedback: HitFeedback = {
-                id: `fb-${Date.now()}`,
-                x: CONFIG.JUDGMENT_LINE_X,
-                y: 250, // 텍스트 높이
-                offset: offset,
-                judgment: Math.abs(offset) < 50 ? 'PERFECT' : 'GOOD',
-                timestamp: now
-            };
-            feedbacksRef.current.push(feedback);
-
             setMessage(`입력됨! 오차: ${Math.round(offset)}ms`);
         }
     }, [isRunning]);
