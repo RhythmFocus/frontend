@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { CanvasRenderer } from '../core/CanvasRenderer';
-import { Note } from '../types/game.types';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
+import {CanvasRenderer} from '../core/CanvasRenderer';
+import {Note} from '../types/game.types';
 
 export interface SyncTestResult {
     offset: number;       // 보정값
@@ -25,15 +25,15 @@ const CONFIG = {
 };
 
 const calculateStats = (data: number[]) => {
-    if (data.length === 0) return { mean: 0, stdDev: 0 };
+    if (data.length === 0) return {mean: 0, stdDev: 0};
 
     const mean = data.reduce((a, b) => a + b, 0) / data.length;
     const variance = data.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / data.length;
-    return { mean, stdDev: Math.sqrt(variance) };
+    return {mean, stdDev: Math.sqrt(variance)};
 };
 
 
-const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => {
+const SyncTester: React.FC<SyncTesterProps> = ({onComplete, triggerInput}) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const rendererRef = useRef<CanvasRenderer | null>(null);
@@ -129,7 +129,9 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
 
         const now = performance.now();
         isCharacterHittingRef.current = true;
-        setTimeout(() => { isCharacterHittingRef.current = false; }, 500); // 0.5초 타격 모션
+        setTimeout(() => {
+            isCharacterHittingRef.current = false;
+        }, 500); // 0.5초 타격 모션
 
         // 판정 범위 내(-200ms ~ +200ms)에 있는 가장 가까운 노트 찾기
         const targetNote = notesRef.current.find(n =>
@@ -175,7 +177,7 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
             rawOffsets = rawOffsets.slice(1, rawOffsets.length - 1); // Min/Max 절사
         }
 
-        const { mean, stdDev } = calculateStats(rawOffsets);
+        const {mean, stdDev} = calculateStats(rawOffsets);
         const MAX_ALLOWED_STD_DEV = 45; // 허용 편차 (ms)
 
         // 3. 불안정 실패
@@ -217,7 +219,10 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
                         판정선이 노트에 정중앙에 위치할 때 박수/키보드를 쳐주세요!
                     </p>
                     <button
-                        onClick={(e) => { e.stopPropagation(); startTest(); }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            startTest();
+                        }}
                         style={styles.startBtn}
                     >
                         테스트 시작 ▶
