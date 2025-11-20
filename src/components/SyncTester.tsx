@@ -90,7 +90,6 @@ const SyncTester: React.FC<SyncTesterProps> = ({onComplete, triggerInput}) => {
         const currentBeatIndex = Math.floor((timeSinceStart + 50) / CONFIG.INTERVAL);
 
         if (currentBeatIndex >= 0 && currentBeatIndex < CONFIG.TOTAL_BEATS && currentBeatIndex > beatIndexRef.current) {
-            playBeat();
             beatIndexRef.current = currentBeatIndex;
         }
 
