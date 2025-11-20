@@ -50,7 +50,7 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
     useEffect(() => {
         const canvas = canvasRef.current;
         const video = videoRef.current;
-        if (!canvas || !video || !landmarks) return;
+        if (!canvas || !video) return;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
@@ -58,16 +58,19 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 캔버스 배경을 단색으로 채움 (영상 대신)
+        ctx.fillStyle = '#1a1a1a'; // 어두운 회색 배경
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
 
-        const currentHands = landmarks.landmarks;
-        const currentHandCount = currentHands.length;
+        const currentHands = landmarks?.landmarks;
+        const currentHandCount = currentHands ? currentHands.length : 0;
 
         // 손 그리기 및 거리 판단
         if (currentHandCount > 0) {
-            const hand = currentHands[0];
+            const hand = currentHands![0]; // !를 사용하여 null/undefined가 아님을 보장
             const palmSize = getDistance(hand[0], hand[9]);
             const isEdgeTouching = hand.some(p => p.x < 0.05 || p.x > 0.95 || p.y < 0.05 || p.y > 0.95);
 
@@ -82,7 +85,6 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
                 newText = "조금 뒤로 가주세요 (Too Close)";
             }
 
-            // 부모에게 상태 전달 (값이 변했을 때만)
             setCalibrationMsg(prev => {
                 if (prev.status !== newStatus && onStatusChange) {
                     onStatusChange(newStatus);
@@ -90,9 +92,9 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
                 return prev.status === newStatus ? prev : { status: newStatus, text: newText };
             });
 
-            // 그리기 로직
-            currentHands.forEach((h) => {
-                const strokeColor = newStatus === 'perfect' ? '#00FF00' : '#FFD700';
+            // 그리기 로직 (스켈레톤만)
+            currentHands!.forEach((h) => {
+                const strokeColor = newStatus === 'perfect' ? '#48ff00' : '#FFD700'; // 시안색 또는 금색
                 ctx.strokeStyle = strokeColor;
                 HAND_CONNECTIONS.forEach(([start, end]) => {
                     const first = h[start];
@@ -111,7 +113,6 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
                 });
             });
         } else {
-            // 손이 없을 때도 부모에게 알림
             setCalibrationMsg(prev => {
                 if (prev.status !== 'no_hand' && onStatusChange) {
                     onStatusChange('no_hand');
@@ -122,8 +123,8 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
 
         if (!clapCooldown.current) {
             if (currentHandCount === 2) {
-                const hand1 = currentHands[0];
-                const hand2 = currentHands[1];
+                const hand1 = currentHands![0];
+                const hand2 = currentHands![1];
                 const size = (getDistance(hand1[0], hand1[9]) + getDistance(hand2[0], hand2[9])) / 2;
                 const dist = getDistance(hand1[0], hand2[0]);
                 const currentRatio = dist / size;
@@ -143,7 +144,7 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
             }
         }
         prevHandCount.current = currentHandCount;
-    }, [landmarks, onStatusChange]);
+    }, [landmarks, onStatusChange, onClap]);
 
     const getStatusColor = (s: CalibrationStatus) => {
         switch(s) {
@@ -175,11 +176,11 @@ const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap })
                     autoPlay
                     playsInline
                     muted
-                    style={styles.media}
+                    style={styles.hiddenVideo} // 비디오 숨김
                 />
                 <canvas
                     ref={canvasRef}
-                    style={styles.media}
+                    style={styles.visibleCanvas} // 캔버스를 보이게 함
                 />
                 {clapDetected && (
                     <div style={styles.clapIndicator}>CLAP!</div>
@@ -205,13 +206,25 @@ const styles: { [key: string]: React.CSSProperties } = {
         height: '100%',
         transform: 'scaleX(-1)',
     },
-    media: {
+    hiddenVideo: {
         position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
         objectFit: 'cover',
+        opacity: 0, // 완전 투명하게
+        pointerEvents: 'none', // 클릭 이벤트 무시
+        zIndex: -1, // 다른 요소 뒤로 보냄
+    },
+    visibleCanvas: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // 캔버스가 비디오와 같은 비율을 유지
+        zIndex: 1, // 앞에 보이도록
     },
     statusBadge: {
         position: 'absolute',

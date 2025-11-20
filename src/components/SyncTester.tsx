@@ -63,13 +63,12 @@ const SyncTester: React.FC<SyncTesterProps> = ({ onComplete, triggerInput }) => 
         setIsRunning(true);
         offsetsRef.current = [];
         feedbacksRef.current = [];
-        beatIndexRef.current = 0;
+        beatIndexRef.current = -1;
 
         // 시작 시간 설정 (1초 대기 후 시작)
         const startDelay = 1000;
         startTimeRef.current = performance.now() + startDelay;
 
-        // 노트 8개 생성
         const newNotes: Note[] = [];
         for (let i = 0; i < CONFIG.TOTAL_BEATS; i++) {
             const noteTime = startTimeRef.current + (i * CONFIG.INTERVAL);
