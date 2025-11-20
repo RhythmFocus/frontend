@@ -70,11 +70,6 @@ function CalibrationScreen() {
 
     return (
         <div style={styles.pageContainer}>
-            <h1 style={{ marginBottom: '10px' }}>
-                {currentStage === 'detection' ? '1단계: 장치 연결 확인' :
-                    currentStage === 'sync' ? '2단계: 리듬 싱크 맞추기' : '설정 완료'}
-            </h1>
-
             <div style={styles.displayArea}>
                 {selectedMode === 'motion' && (
                     <div style={{
@@ -127,19 +122,16 @@ function CalibrationScreen() {
                             )}
                         </div>
 
-                        {/* 선택 버튼 그룹 */}
                         <div style={styles.actionButtonGroup}>
                             {calibrationResult.success && (
                                 <button onClick={handleMainPage} style={styles.primaryBtn}>
                                     메인 화면으로
                                 </button>
                             )}
-
                             <div style={styles.secondaryGroup}>
                                 <button onClick={handleRetry} style={styles.secondaryBtn}>
                                     다시 측정하기
                                 </button>
-
                                 <button onClick={handleReselect} style={styles.secondaryBtn}>
                                     입력 방식 변경
                                 </button>
@@ -159,7 +151,6 @@ function CalibrationScreen() {
                             다음 단계 (싱크 측정)
                         </button>
                     )}
-
                     <button onClick={handleReselect} style={styles.backBtn}>
                         취소하고 돌아가기
                     </button>
@@ -171,15 +162,38 @@ function CalibrationScreen() {
 
 const styles = {
     pageContainer: {
-        width: '100vw', height: '100vh', background: '#d0f4f0', color: 'white',
-        display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center',
+        width: '100vw',
+        height: '100vh',
+        background: '#d0f4f0',
+        color: 'white',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        boxSizing: 'border-box' as const,
     },
+    title: {
+        marginBottom: '20px',
+        color: '#333',
+        fontSize: '28px',
+        fontWeight: 'bold',
+        textShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    },
+    // ⚡ [핵심] 16:9 비율 유지 및 반응형 크기 조절
     displayArea: {
-        width: '800px', height: '500px',
-        background: '#333', borderRadius: '20px',
-        overflow: 'hidden', position: 'relative' as const,
-        boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
-        display: 'flex', justifyContent: 'center', alignItems: 'center'
+        width: 'min(90vw, 1200px)',
+        aspectRatio: '16 / 9',
+        maxHeight: '80vh',
+
+        background: '#333',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        position: 'relative' as const,
+        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     motionWrapper: {
         width: '100%', height: '100%', position: 'absolute' as const, top: 0, left: 0,
@@ -187,10 +201,6 @@ const styles = {
     keyboardWrapper: {
         width: '100%', height: '100%', background: '#fff',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-    },
-    overlayLayer: {
-        position: 'absolute' as const, top: 0, left: 0, right: 0, bottom: 0,
-        background: 'rgb(78,205,196)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10
     },
     fullScreenOverlay: {
         position: 'fixed' as const,
@@ -204,25 +214,25 @@ const styles = {
         background: '#f8f9fa', color: '#333',
         display: 'flex', flexDirection: 'column' as const,
         alignItems: 'center', justifyContent: 'center', zIndex: 20,
-        padding: '40px'
+        padding: '20px'
     },
     resultBox: {
         background: 'white', padding: '20px 40px', borderRadius: '15px',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)', textAlign: 'center' as const,
-        marginBottom: '30px', minWidth: '300px',
+        marginBottom: '25px', minWidth: '280px',
         display: 'flex', flexDirection: 'column' as const, alignItems: 'center', justifyContent: 'center'
     },
     offsetValue: {
-        fontSize: '48px', fontWeight: '900', color: '#4ECDC4', margin: '10px 0'
+        fontSize: '42px', fontWeight: '900', color: '#4ECDC4', margin: '5px 0'
     },
     offsetDesc: {
         fontSize: '14px', color: '#888'
     },
     actionButtonGroup: {
-        display: 'flex', flexDirection: 'column' as const, gap: '15px', width: '100%', maxWidth: '350px'
+        display: 'flex', flexDirection: 'column' as const, gap: '12px', width: '100%', maxWidth: '320px'
     },
     primaryBtn: {
-        padding: '18px', fontSize: '20px', fontWeight: 'bold', borderRadius: '12px',
+        padding: '16px', fontSize: '18px', fontWeight: 'bold', borderRadius: '12px',
         background: 'linear-gradient(135deg, #6c5ce7, #a29bfe)', color: 'white', border: 'none',
         cursor: 'pointer', boxShadow: '0 4px 12px rgba(108, 92, 231, 0.3)',
         transition: 'transform 0.2s'
@@ -236,14 +246,15 @@ const styles = {
         cursor: 'pointer', transition: 'background 0.2s'
     },
     actionBar: {
-        marginTop: '30px', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '15px',
+        marginTop: '20px', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '15px',
     },
     nextBtn: {
-        padding: '15px 35px', fontSize: '18px', borderRadius: '30px', border: 'none',
-        background: '#0984e3', color: 'white', cursor: 'pointer', fontWeight: 'bold'
+        padding: '14px 30px', fontSize: '18px', borderRadius: '30px', border: 'none',
+        background: '#0984e3', color: 'white', cursor: 'pointer', fontWeight: 'bold',
+        boxShadow: '0 4px 10px rgba(9, 132, 227, 0.3)'
     },
     backBtn: {
-        background: 'transparent', border: 'none', color: '#aaa', cursor: 'pointer', textDecoration: 'underline'
+        background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', textDecoration: 'underline', fontSize: '14px'
     }
 };
 

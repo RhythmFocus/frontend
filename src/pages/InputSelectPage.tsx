@@ -53,6 +53,8 @@ const styles: { [key: string]: React.CSSProperties } = {
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
+        padding: '20px',
+        boxSizing: 'border-box',
     },
     homeIcon: {
         position: 'absolute',
@@ -61,26 +63,37 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontSize: '30px',
         cursor: 'pointer',
         color: '#00d2d3',
+        zIndex: 10,
     },
     card: {
+        width: 'min(90vw, 1200px)',
+        aspectRatio: '16 / 9',
+        maxHeight: '80vh',
+
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+
         backgroundColor: 'white',
-        padding: '60px 80px',
         borderRadius: '30px',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
         textAlign: 'center',
-        maxWidth: '800px',
-        width: '90%',
+        position: 'relative',
+        padding: '40px',
+        boxSizing: 'border-box',
     },
     title: {
-        fontSize: '28px',
+        fontSize: 'min(4vw, 28px)',
         color: '#555',
-        marginBottom: '60px',
+        marginBottom: '8%',
         fontWeight: 'bold',
     },
     buttonContainer: {
         display: 'flex',
         justifyContent: 'center',
-        gap: '80px',
+        gap: '10%',
+        width: '100%',
         flexWrap: 'wrap',
     },
     selectionBox: {
@@ -92,7 +105,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
     iconWrapper: {
         marginBottom: '20px',
-        // 실제 이미지 사용 시 사이즈 조절
         width: '150px',
         height: '150px',
         display: 'flex',
@@ -109,6 +121,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         cursor: 'pointer',
         fontWeight: 'bold',
         boxShadow: '0 4px 10px rgba(125, 134, 191, 0.4)',
+        whiteSpace: 'nowrap', // 버튼 텍스트 줄바꿈 방지
     }
 };
 
