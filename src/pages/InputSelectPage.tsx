@@ -6,12 +6,12 @@ function InputSelectPage() {
 
     // 모드 선택 시 캘리브레이션 페이지로 이동하며 상태 전달
     const handleSelectMode = (mode: 'motion' | 'keyboard') => {
-        navigate('/calibration', { state: { selectedMode: mode } });
+        navigate('/calibration/process', { state: { selectedMode: mode } });
     };
 
     return (
         <div style={styles.container}>
-            <div style={styles.homeIcon} onClick={() => navigate('/')}>
+            <div style={styles.homeIcon} onClick={() => navigate('/main')}>
                 🏠
             </div>
 
