@@ -7,6 +7,7 @@ import MainPage from './pages/MainPage';
 import UserPage from './pages/UserPage';
 import CalibrationPage from './pages/CalibrationPage';
 import './App.css';
+import InputSelectPage from "./pages/InputSelectPage.tsx";
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
         <Route path="/main" element={<MainPage />} /> 
         <Route path="/game" element={<GamePage />} />
         <Route path="/user" element={<UserPage />} />
-        <Route path="/calibration" element={<CalibrationPage />} />
+        <Route path="/calibration" element={<InputSelectPage />} />
+        <Route path="/calibration/process" element={<CalibrationPage />} />
       </Routes>
     </BrowserRouter>
   );

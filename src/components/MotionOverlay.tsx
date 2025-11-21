@@ -11,197 +11,263 @@ const HAND_CONNECTIONS = [
   [5, 9], [9, 13], [13, 17] // 손바닥 연결
 ];
 
-const MotionOverlay: React.FC = () => {
-  const { videoRef, isLoaded, landmarks } = useHandTracking();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [clapDetected, setClapDetected] = useState(false);
+// Props 타입 정의 추가
+type CalibrationStatus = 'no_hand' | 'too_far' | 'too_close' | 'perfect';
 
-  // 박수 인식 알고리즘용 Ref 변수
-  const prevHandCount = useRef(0);      // 이전 프레임 손 개수
-  const prevDistRatio = useRef(10.0);   // 이전 프레임 거리 비율
-  const prevVelocity = useRef(0);       // 이전 프레임 속도 (변화량)
-  const clapCooldown = useRef(false);   // 중복 인식 방지
+interface MotionOverlayProps {
+    onStatusChange?: (status: CalibrationStatus) => void;
+    onClap?: () => void;
+}
 
-  // 거리 계산 헬퍼
-  const getDistance = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
-    return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-  };
+// 함수 인자에 props 추가
+const MotionOverlay: React.FC<MotionOverlayProps> = ({ onStatusChange, onClap }) => {
+    const { videoRef, isLoaded, landmarks } = useHandTracking();
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [clapDetected, setClapDetected] = useState(false);
 
-  // 박수 트리거 함수
-  const triggerClap = () => {
-    // console.log("Clap Detected!");
-    setClapDetected(true);
-    clapCooldown.current = true;
+    const [calibrationMsg, setCalibrationMsg] = useState<{status: CalibrationStatus, text: string}>({
+        status: 'no_hand',
+        text: '카메라에 손을 보여주세요'
+    });
 
-    // UI 표시 시간 (0.2초)
-    setTimeout(() => setClapDetected(false), 200);
-    // 박수 인식 쿨다운 (일단은 0.3초)
-    setTimeout(() => { clapCooldown.current = false; }, 300);
-  };
+    const prevHandCount = useRef(0);
+    const prevDistRatio = useRef(10.0);
+    const prevVelocity = useRef(0);
+    const clapCooldown = useRef(false);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video || !landmarks) return;
+    const getDistance = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
+        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    };
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const triggerClap = () => {
+        setClapDetected(true);
+        clapCooldown.current = true;
+        if (onClap) onClap();
+        setTimeout(() => setClapDetected(false), 200);
+        setTimeout(() => { clapCooldown.current = false; }, 300);
+    };
 
-    // 캔버스 크기를 비디오 크기와 일치시킴
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const video = videoRef.current;
+        if (!canvas || !video) return;
 
-    // 그리기 초기화
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.lineWidth = 3;
-    ctx.lineCap = 'round';
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-    const currentHands = landmarks.landmarks;
-    const currentHandCount = currentHands.length;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-    // 1. 손 그리기
-    if (currentHandCount > 0) {
-      currentHands.forEach((hand) => {
-        ctx.strokeStyle = '#00FF00';
-        HAND_CONNECTIONS.forEach(([start, end]) => {
-          const first = hand[start];
-          const second = hand[end];
+        // 캔버스 배경을 단색으로 채움 (영상 대신)
+        ctx.fillStyle = '#1a1a1a'; // 어두운 회색 배경
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-          ctx.beginPath();
-          ctx.moveTo(first.x * canvas.width, first.y * canvas.height);
-          ctx.lineTo(second.x * canvas.width, second.y * canvas.height);
-          ctx.stroke();
-        });
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
 
-        // 2. 관절(Point) 그리기
-        ctx.fillStyle = '#FF0000'; // 빨간 점
-        hand.forEach((point) => {
-          ctx.beginPath();
-          // x, y는 0~1 정규화된 값이므로 캔버스 크기를 곱해야 함
-          ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
-          ctx.fill();
-        });
-      });
-    }
+        const currentHands = landmarks?.landmarks;
+        const currentHandCount = currentHands ? currentHands.length : 0;
 
-    //  박수를 인식하는 부분
-    if (!clapCooldown.current) {
+        // 손 그리기 및 거리 판단
+        if (currentHandCount > 0) {
+            const hand = currentHands![0]; // !를 사용하여 null/undefined가 아님을 보장
+            const palmSize = getDistance(hand[0], hand[9]);
+            const isEdgeTouching = hand.some(p => p.x < 0.05 || p.x > 0.95 || p.y < 0.05 || p.y > 0.95);
 
-      // Case A: 손이 2개일 때 (가까워지는 중인지 확인)
-      if (currentHandCount === 2) {
-        const hand1 = currentHands[0];
-        const hand2 = currentHands[1];
+            let newStatus: CalibrationStatus = 'perfect';
+            let newText = "거리 완벽함! (Perfect)";
 
-        // 손 크기(Reference) 측정 (손목~중지) -> 상대적인 거리를 재기 위해
-        const size = (getDistance(hand1[0], hand1[9]) + getDistance(hand2[0], hand2[9])) / 2;
-        // 두 손목 사이 거리
-        const dist = getDistance(hand1[0], hand2[0]);
+            if (palmSize < 0.12) {
+                newStatus = 'too_far';
+                newText = "더 가까이 와주세요 (Too Far)";
+            } else if (palmSize > 0.35 || isEdgeTouching) {
+                newStatus = 'too_close';
+                newText = "조금 뒤로 가주세요 (Too Close)";
+            }
 
-        // 비율 계산
-        const currentRatio = dist / size;
+            setCalibrationMsg(prev => {
+                if (prev.status !== newStatus && onStatusChange) {
+                    onStatusChange(newStatus);
+                }
+                return prev.status === newStatus ? prev : { status: newStatus, text: newText };
+            });
 
-        // 속도(Velocity) 계산: (현재 - 과거). 음수면 가까워짐, 양수면 멀어짐
-        const velocity = currentRatio - prevDistRatio.current;
+            // 그리기 로직 (스켈레톤만)
+            currentHands!.forEach((h) => {
+                const strokeColor = newStatus === 'perfect' ? '#48ff00' : '#FFD700'; // 시안색 또는 금색
+                ctx.strokeStyle = strokeColor;
+                HAND_CONNECTIONS.forEach(([start, end]) => {
+                    const first = h[start];
+                    const second = h[end];
+                    ctx.beginPath();
+                    ctx.moveTo(first.x * canvas.width, first.y * canvas.height);
+                    ctx.lineTo(second.x * canvas.width, second.y * canvas.height);
+                    ctx.stroke();
+                });
 
-        // Ratio가 임곗값 아래고, 빠르게 가까워지는 중(-0.05)이라면 박수로 인정
-        // 멀어질 때(velocity > 0)는 인식 안 함
-        if (currentRatio < 0.8 && velocity < -0.05) {
-             triggerClap();
+                ctx.fillStyle = '#FF0000';
+                h.forEach((point) => {
+                    ctx.beginPath();
+                    ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+            });
+        } else {
+            setCalibrationMsg(prev => {
+                if (prev.status !== 'no_hand' && onStatusChange) {
+                    onStatusChange('no_hand');
+                }
+                return prev.status === 'no_hand' ? prev : { status: 'no_hand', text: '카메라에 손을 보여주세요' };
+            });
         }
 
-        // 상태 업데이트
-        prevDistRatio.current = currentRatio;
-        prevVelocity.current = velocity;
-      }
-      // Case B: 손이 사라짐 (손이 2개 미만, 이전 인식 손 개수가 2개)
-      else if (currentHandCount < 2 && prevHandCount.current === 2) {
-          // 사라지기 직전에 거리가 가까웠고(3.0 미만), 빠르게 다가오고 있었다면(-0.1 미만)
-          if (prevDistRatio.current < 3.0 && prevVelocity.current < -0.1) {
-              triggerClap();
-              // 중복 방지 리셋
-              prevDistRatio.current = 10.0;
-          }
-      }
-    }
+        if (!clapCooldown.current) {
+            if (currentHandCount === 2) {
+                const hand1 = currentHands![0];
+                const hand2 = currentHands![1];
+                const size = (getDistance(hand1[0], hand1[9]) + getDistance(hand2[0], hand2[9])) / 2;
+                const dist = getDistance(hand1[0], hand2[0]);
+                const currentRatio = dist / size;
+                const velocity = currentRatio - prevDistRatio.current;
 
-    prevHandCount.current = currentHandCount;
-  }, [landmarks]);
+                if (currentRatio < 0.8 && velocity < -0.05) {
+                    triggerClap();
+                }
+                prevDistRatio.current = currentRatio;
+                prevVelocity.current = velocity;
+            }
+            else if (currentHandCount < 2 && prevHandCount.current === 2) {
+                if (prevDistRatio.current < 3.0 && prevVelocity.current < -0.1) {
+                    triggerClap();
+                    prevDistRatio.current = 10.0;
+                }
+            }
+        }
+        prevHandCount.current = currentHandCount;
+    }, [landmarks, onStatusChange, onClap]);
 
-  return (
-    <div style={styles.container}>
-      <div style={styles.statusBadge}>
-        {isLoaded ? "Motion Ready" : "Loading Model..."}
-      </div>
+    const getStatusColor = (s: CalibrationStatus) => {
+        switch(s) {
+            case 'perfect': return '#2ecc71';
+            case 'too_close': return '#e74c3c';
+            case 'too_far': return '#f1c40f';
+            default: return '#95a5a6';
+        }
+    };
 
-      <div style={styles.videoWrapper}>
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          style={styles.media}
-        />
-        <canvas
-          ref={canvasRef}
-          style={styles.media}
-        />
-        {clapDetected && (
-          <div style={styles.clapIndicator}>CLAP!</div>
-        )}
-      </div>
-    </div>
-  );
+    return (
+        <div style={styles.container}>
+            <div style={styles.statusBadge}>
+                {isLoaded ? "System Ready" : "Loading..."}
+            </div>
+
+            {isLoaded && (
+                <div style={{
+                    ...styles.feedbackMessage,
+                    backgroundColor: getStatusColor(calibrationMsg.status)
+                }}>
+                    {calibrationMsg.text}
+                </div>
+            )}
+
+            <div style={styles.videoWrapper}>
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={styles.hiddenVideo} // 비디오 숨김
+                />
+                <canvas
+                    ref={canvasRef}
+                    style={styles.visibleCanvas} // 캔버스를 보이게 함
+                />
+                {clapDetected && (
+                    <div style={styles.clapIndicator}>CLAP!</div>
+                )}
+            </div>
+        </div>
+    );
 };
 
 const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-    display: 'flex',
-    flexDirection: 'column',
-    backgroundColor: '#000',
-  },
-  videoWrapper: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    transform: 'scaleX(-1)', // 거울 모드 (비디오+캔버스 같이 반전)
-  },
-  media: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  statusBadge: {
-    position: 'absolute',
-    top: '10px',
-    left: '10px',
-    padding: '6px 12px',
-    background: 'rgba(0,0,0,0.6)',
-    border: '1px solid #fff',
-    color: '#fff',
-    fontSize: '12px',
-    borderRadius: '20px',
-    zIndex: 10,
-    fontWeight: 'bold',
-  },
-  clapIndicator: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'scaleX(-1)',
-    fontSize: '80px',
-    fontWeight: '900',
-    color: '#FFF200',
-    zIndex: 20,
-    textShadow: '0 0 20px rgba(255, 242, 0, 0.8)',
-    animation: 'popIn 0.1s ease-out',
-  }
+    container: {
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#000',
+    },
+    videoWrapper: {
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        transform: 'scaleX(-1)',
+    },
+    hiddenVideo: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        opacity: 0, // 완전 투명하게
+        pointerEvents: 'none', // 클릭 이벤트 무시
+        zIndex: -1, // 다른 요소 뒤로 보냄
+    },
+    visibleCanvas: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover', // 캔버스가 비디오와 같은 비율을 유지
+        zIndex: 1, // 앞에 보이도록
+    },
+    statusBadge: {
+        position: 'absolute',
+        top: '10px',
+        left: '10px',
+        padding: '6px 12px',
+        background: 'rgba(0,0,0,0.6)',
+        border: '1px solid #fff',
+        color: '#fff',
+        fontSize: '12px',
+        borderRadius: '20px',
+        zIndex: 10,
+        fontWeight: 'bold',
+    },
+    feedbackMessage: {
+        position: 'absolute',
+        top: '50px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        padding: '10px 20px',
+        color: '#fff',
+        fontSize: '18px',
+        fontWeight: 'bold',
+        borderRadius: '30px',
+        zIndex: 15,
+        boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+        transition: 'background-color 0.3s ease',
+        textAlign: 'center',
+        minWidth: '200px',
+    },
+    clapIndicator: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%) scaleX(-1)',
+        fontSize: '80px',
+        fontWeight: '900',
+        color: '#FFF200',
+        zIndex: 20,
+        textShadow: '0 0 20px rgba(255, 242, 0, 0.8)',
+        animation: 'popIn 0.1s ease-out',
+        whiteSpace: 'nowrap',
+    }
 };
 
 export default MotionOverlay;
