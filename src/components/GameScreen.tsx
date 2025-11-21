@@ -353,6 +353,7 @@ export function GameScreen({ difficulty, onExit }: GameScreenProps) {
       const BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
       const safeAccuracy = isNaN(finalState.accuracy) ? 0 : finalState.accuracy;
       const safeAverageOffset = isNaN(finalState.averageOffset) ? 0 : finalState.averageOffset;
+      const earnedTickets = Math.floor(safeAccuracy / 10); // accuracy / 10
 
       const gameResultData = {
         difficulty: String(difficulty),
@@ -368,6 +369,7 @@ export function GameScreen({ difficulty, onExit }: GameScreenProps) {
         missCount: Math.floor(Number(finalState.judgmentCounts.miss) || 0),
         totalNotes: Math.floor(Number(finalState.totalNotes) || 0),
         averageOffset: Number(safeAverageOffset.toFixed(2)),
+        earnedTickets: earnedTickets,
       };
 
       await fetchWithAccess(`${BACKEND_API_BASE_URL}/game-result`, {
