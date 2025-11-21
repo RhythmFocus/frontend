@@ -37,7 +37,10 @@ function LoginPage() {
       localStorage.setItem("refreshToken", data.refreshToken);
       
       // ✅ 로그인 성공 시 메인 페이지로 이동
-      navigate("/main");
+      // navigate("/main");
+      // 일시적으로 신규 여부에 상관 없이 가이드 페이지로 이동
+      // TODO: 신규 사용자 여부를 백엔드에서 받아오는 코드 추가
+      navigate("/guide");
     } catch (err) {
       setError("아이디 또는 비밀번호가 틀렸습니다.");
     } finally {
