@@ -29,7 +29,7 @@ function DiagnosisPage() {
         <div style={styles.container}>
             {/* 상단 영역 (홈 아이콘 + 헤더 텍스트) */}
             <div style={styles.topBar}>
-                <div style={styles.homeIcon} onClick={() => navigate('/')}>
+                <div style={styles.homeIcon} onClick={() => navigate('/main')}>
                     🏠
                 </div>
 
