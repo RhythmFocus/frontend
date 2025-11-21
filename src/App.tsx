@@ -6,7 +6,7 @@ import LoginPage from './pages/LoginPage';
 import MainPage from './pages/MainPage';
 import UserPage from './pages/UserPage';
 import CalibrationPage from './pages/CalibrationPage';
-import InputSelectPage from "./pages/InputSelectPage.tsx";
+import InputSelectPage from './pages/InputSelectPage';
 import GuidePage from './pages/GuidePage.tsx';
 import './App.css';
 
