@@ -24,11 +24,11 @@ const DiagnosisCard: React.FC<DiagnosisCardProps> = ({item, onClick}) => {
 
     return (
         <div style={styles.card}>
-            {isCompleted && (
-                <div style={styles.ribbon}>
+            <div style={styles.ribbon}>
+                {isCompleted && (
                     <span style={styles.checkMark}>✓</span>
-                </div>
-            )}
+                )}
+            </div>
 
             <div style={styles.content}>
                 <div style={styles.header}>
