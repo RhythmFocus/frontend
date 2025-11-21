@@ -11,12 +11,13 @@ function GuidePage() {
 
     return (
         <div style={styles.container}>
-            {/* 홈 아이콘 (선택사항) */}
+            {/* 홈 아이콘 */}
             <div style={styles.homeIcon} onClick={() => navigate('/main')}>
                 🏠
             </div>
 
             <div style={styles.card}>
+                {/* 메인 페이지 타이틀 스타일과 유사하게 적용 */}
                 <h1 style={styles.title}>
                     집중력 리듬 게임에 오신 것을 환영합니다!
                 </h1>
@@ -42,13 +43,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     container: {
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#d0f4f0', // 민트색 배경
+        backgroundColor: '#d0f4f0', // 민트색 배경 (메인 페이지와 톤 유사)
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         position: 'relative',
         padding: '20px',
         boxSizing: 'border-box',
+        // 메인 페이지처럼 별도의 폰트 패밀리 지정 없이 시스템 기본 폰트 사용
     },
     homeIcon: {
         position: 'absolute',
@@ -59,15 +61,13 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: '#00d2d3',
     },
     card: {
-        width: 'min(90vw, 800px)', // 조금 더 컴팩트하게
+        width: 'min(90vw, 800px)',
         aspectRatio: '16 / 9',
         maxHeight: '70vh',
-
         backgroundColor: 'white',
         borderRadius: '30px',
         boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
         textAlign: 'center',
-
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -76,25 +76,30 @@ const styles: { [key: string]: React.CSSProperties } = {
         boxSizing: 'border-box',
     },
     title: {
-        fontSize: 'min(3.5vw, 24px)',
-        color: '#555',
+        // 메인 페이지의 Header Title 스타일 참고 (fontWeight: 'bold', 그림자 등)
+        fontSize: 'min(3.5vw, 32px)',
+        fontWeight: 'bold',
+        color: '#333',
         marginBottom: '30px',
-        fontWeight: 'normal',
+        lineHeight: '1.3',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.1)', // 메인 페이지의 텍스트 그림자 효과 적용
     },
     description: {
         fontSize: 'min(3vw, 20px)',
         color: '#333',
         marginBottom: '20px',
         lineHeight: '1.6',
+        fontWeight: '500', // 가독성을 위해 약간 두께감 줌
     },
     subDescription: {
         fontSize: 'min(3vw, 20px)',
         color: '#333',
         marginBottom: '50px',
         lineHeight: '1.6',
+        fontWeight: '500',
     },
     highlight: {
-        color: '#6c5ce7', // 강조 색상 (보라 계열)
+        color: '#6c5ce7', // 보라색 강조
         fontWeight: 'bold',
     },
     actionButton: {
