@@ -20,6 +20,8 @@ function DiagnosisPage() {
     const handleCardClick = (item: DiagnosisItem) => {
         if (item.type === 'SNAP_IV') {
             navigate('/snapiv', { state: { gameType: item.type } });
+        } else if (item.type === 'ASRS') {
+            navigate('/asrs', { state: { gameType: item.type } });
         } else if (item.type === 'STROOP') {
             navigate('/stroop', { state: { gameType: item.type } });
         } else if (item.type === 'N_BACK') {
