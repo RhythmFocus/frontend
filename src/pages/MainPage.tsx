@@ -68,11 +68,26 @@ function MainPage() {
 
         <div style={styles.menuGroup}>
           <button style={styles.menuButton}>나의 기록</button>
-          <button style={styles.menuButton}>진단</button>
-          <button style={styles.menuButton}>내 캐릭터</button>
-          <button style={styles.menuButton}>뽑기</button>
+          <button
+            onClick={() => navigate('/diagnosis')}
+            style={styles.menuButton}
+          >
+            <span>진단</span>
+          </button>
+          <button
+            onClick={() => navigate('/user')}
+           style={styles.menuButton}>내 캐릭터</button>
+          <button 
+            onClick={() => navigate('/gacha')}
+            style={styles.menuButton}>뽑기</button>
           <button style={styles.menuButton}>설정</button>
           <button style={styles.menuButton}>Language</button>
+          <button
+            onClick={() => navigate('/calibration')}
+            style={styles.menuButton}
+          >
+            <span>Calibration</span>
+          </button>
         </div>
       </div>
 

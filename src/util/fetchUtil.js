@@ -32,6 +32,10 @@ export async function fetchWithAccess(url, options = {}) {
     // 옵션에 Header 없는 경우 추가 + AccessToken 부착
     if (!options.headers) options.headers = {};
     options.headers["Authorization"] = `Bearer ${accessToken}`;
+
+    if (options.method === 'GET' || options.method === 'DELETE' || !options.method) {
+        delete options.headers['Content-Type'];
+    }
     
     // 요청 진행
     let response = await fetch(url, options);
