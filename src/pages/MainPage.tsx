@@ -68,7 +68,12 @@ function MainPage() {
 
         <div style={styles.menuGroup}>
           <button style={styles.menuButton}>나의 기록</button>
-          <button style={styles.menuButton}>진단</button>
+          <button
+            onClick={() => navigate('/diagnosis')}
+            style={styles.menuButton}
+          >
+            <span>진단</span>
+          </button>
           <button style={styles.menuButton}>내 캐릭터</button>
           <button 
             onClick={() => navigate('/gacha')}
