@@ -9,6 +9,8 @@ import CalibrationPage from './pages/CalibrationPage';
 import InputSelectPage from './pages/InputSelectPage';
 import GuidePage from './pages/GuidePage.tsx';
 import DiagnosisPage from './pages/DiagnosisPage';
+import SurveyPage from './pages/SurveyPage';
+import ResultPage from './pages/SurveyResultPage.tsx';
 import './App.css';
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
                 <Route path="/calibration/process" element={<CalibrationPage/>}/>
                 <Route path="/guide" element={<GuidePage/>}/>
                 <Route path="/diagnosis" element={<DiagnosisPage />} />
+                <Route path="/diagnosis/result" element={<ResultPage />} />
+                <Route path="/survey" element={<SurveyPage />} />
             </Routes>
         </BrowserRouter>
     );
