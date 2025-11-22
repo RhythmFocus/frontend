@@ -74,8 +74,12 @@ function MainPage() {
           >
             <span>진단</span>
           </button>
-          <button style={styles.menuButton}>내 캐릭터</button>
-          <button style={styles.menuButton}>뽑기</button>
+          <button
+            onClick={() => navigate('/user')}
+           style={styles.menuButton}>내 캐릭터</button>
+          <button 
+            onClick={() => navigate('/gacha')}
+            style={styles.menuButton}>뽑기</button>
           <button style={styles.menuButton}>설정</button>
           <button style={styles.menuButton}>Language</button>
           <button
