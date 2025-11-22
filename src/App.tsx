@@ -12,6 +12,7 @@ import DiagnosisPage from './pages/DiagnosisPage';
 import GachaPage from './pages/GachaPage.tsx'
 import StroopPage from './pages/StroopPage';
 import NBackPage from './pages/NBackPage';
+import SnapIv from './pages/SnapIv';
 import './App.css';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/gacha" element={<GachaPage/>}></Route>
                 <Route path="/stroop" element={<StroopPage />} />
                 <Route path="/nback" element={<NBackPage />} />
+                <Route path="/snapiv" element={<SnapIv />} />
             </Routes>
         </BrowserRouter>
     );

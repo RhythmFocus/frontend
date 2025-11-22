@@ -99,9 +99,9 @@ export default function NBackPage() {
   const [hasResponded, setHasResponded] = useState(false);
   const [stats, setStats] = useState(initialStats);
 
-  const tickRef = useRef<number>();
-  const timeoutRef = useRef<number>();
-  const advanceRef = useRef<number>();
+  const tickRef = useRef<number | undefined>(undefined);
+  const timeoutRef = useRef<number | undefined>(undefined);
+  const advanceRef = useRef<number | undefined>(undefined);
   const hasRespondedRef = useRef(false);
 
   const modeConfig = MODE_DATA[mode];
@@ -146,7 +146,7 @@ export default function NBackPage() {
     }, 100);
 
     timeoutRef.current = window.setTimeout(() => {
-      handleTimeout(isWarmupPhase ? false : expectsMatch, isWarmupPhase);
+      handleTimeout(isWarmupPhase ? false : (expectsMatch ?? false), isWarmupPhase);
     }, ITEM_DURATION);
 
     return () => {
