@@ -18,7 +18,13 @@ function DiagnosisPage() {
     const navigate = useNavigate();
 
     const handleCardClick = (item: DiagnosisItem) => {
-        if (item.inputMethod === 'KEYBOARD') {
+        if (item.type === 'SNAP_IV') {
+            navigate('/snapiv', { state: { gameType: item.type } });
+        } else if (item.type === 'STROOP') {
+            navigate('/stroop', { state: { gameType: item.type } });
+        } else if (item.type === 'N_BACK') {
+            navigate('/nback', { state: { gameType: item.type } });
+        } else if (item.inputMethod === 'KEYBOARD') {
             navigate('/calibration', { state: { selectedMode: 'keyboard', gameType: item.type } });
         } else {
             navigate('/select-mode', { state: { gameType: item.type } });
