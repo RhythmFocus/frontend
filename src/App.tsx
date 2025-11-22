@@ -10,6 +10,8 @@ import InputSelectPage from './pages/InputSelectPage';
 import GuidePage from './pages/GuidePage.tsx';
 import DiagnosisPage from './pages/DiagnosisPage';
 import GachaPage from './pages/GachaPage.tsx'
+import StroopPage from './pages/StroopPage';
+import NBackPage from './pages/NBackPage';
 import './App.css';
 
 function App() {
