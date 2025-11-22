@@ -1,60 +1,60 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// ASRS 응답 점수 타입 정의 (0: 전혀 없다 ~ 4: 매우 자주 있다)
+// CFQ 응답 점수 타입 정의 (0: 전혀 아니다 ~ 4: 매우 자주 그렇다)
 type ScoreValue = 0 | 1 | 2 | 3 | 4;
 
-// ASRS 문항 Part 타입
-type Part = 'A' | 'B';
-
-// ASRS 문항 타입 정의
-interface AsrsQuestion {
+// CFQ 문항 타입 정의
+interface CfqQuestion {
     id: number;
-    part: Part;
     text: string;
 }
 
-// ASRS 문항 데이터 (18개 문항)
-const ASRS_QUESTIONS: AsrsQuestion[] = [
-    // Part A - 6문항 (1~6번)
-    { id: 1, part: 'A', text: '세부적인 일을 할 때 부주의한 실수를 저지르는 일이 얼마나 자주 있습니까?' },
-    { id: 2, part: 'A', text: '지루하거나 반복적인 일을 할 때 집중하기 어려운 일이 얼마나 자주 있습니까?' },
-    { id: 3, part: 'A', text: '일을 끝까지 완수하는 데 어려움을 겪는 일이 얼마나 자주 있습니까?' },
-    { id: 4, part: 'A', text: '일을 정리하거나 체계화하는 데 어려움이 얼마나 자주 있습니까?' },
-    { id: 5, part: 'A', text: '약속이나 의무를 잊어버리는 일이 얼마나 자주 있습니까?' },
-    { id: 6, part: 'A', text: '격렬한 활동이 필요한 일에 몰입하거나 집중하기 어려운 일이 얼마나 자주 있습니까?' },
-    
-    // Part B - 12문항 (7~18번)
-    { id: 7, part: 'B', text: '과제나 일을 할 때 필요한 물건을 자주 잃어버리는 일이 있습니까?' },
-    { id: 8, part: 'B', text: '외부 자극으로 인해 쉽게 산만해지는 일이 있습니까?' },
-    { id: 9, part: 'B', text: '집이나 직장에서 무엇을 해야 하는지 기억하는 데 어려움이 있습니까?' },
-    { id: 10, part: 'B', text: '앉아 있어야 할 때 몸을 움직이고 싶은 충동을 얼마나 자주 느낍니까?' },
-    { id: 11, part: 'B', text: '한참 앉아 있으면 자리를 뜨고 싶은 충동이 얼마나 자주 듭니까?' },
-    { id: 12, part: 'B', text: '과도하게 말을 많이 하는 편입니까?' },
-    { id: 13, part: 'B', text: '다른 사람이 말하는 것을 끊고 대신 말하는 일이 얼마나 자주 있습니까?' },
-    { id: 14, part: 'B', text: '순서를 기다리는 것이 얼마나 어렵습니까?' },
-    { id: 15, part: 'B', text: '다른 사람의 일이나 활동에 끼어드는 경우가 얼마나 자주 있습니까?' },
-    { id: 16, part: 'B', text: '하려던 일을 미루는 경우가 얼마나 자주 있습니까?' },
-    { id: 17, part: 'B', text: '해야 할 일보다 즉흥적인 행동을 먼저 하는 일이 얼마나 자주 있습니까?' },
-    { id: 18, part: 'B', text: '한 가지 일에 집중해야 할 상황에서도 다른 일을 먼저 시작하는 일이 얼마나 자주 있습니까?' },
+// CFQ 문항 데이터 (25개 문항)
+const CFQ_QUESTIONS: CfqQuestion[] = [
+    { id: 1, text: '종종 물건을 놓아둔 장소를 잊는다.' },
+    { id: 2, text: '실수로 약속 시간이나 날짜를 잊는다.' },
+    { id: 3, text: '대화 중에 한쪽의 말을 놓치는 일이 있다.' },
+    { id: 4, text: '길을 가다가 목적지를 지나칠 때가 있다.' },
+    { id: 5, text: '쉬운 계산에서 실수를 한다.' },
+    { id: 6, text: '뭔가를 읽고 나서 \'지금 무엇을 읽었지?\' 하고 잊어버린다.' },
+    { id: 7, text: '생각 없이 뭔가를 부딪히거나 넘어질 때가 있다.' },
+    { id: 8, text: '가벼운 일상 작업(예: 전등 끄기)을 잊는다.' },
+    { id: 9, text: '전화번호를 한동안 기억하지 못할 때가 있다.' },
+    { id: 10, text: '물건을 잘못 놓아 찾느라 시간을 낭비한다.' },
+    { id: 11, text: '자신이 하던 일을 잠깐 잊어버린다.' },
+    { id: 12, text: '자신이 막 말하려고 했던 단어를 잊는다.' },
+    { id: 13, text: '계산이나 수치 입력에서 잘못 입력한다.' },
+    { id: 14, text: '누군가가 건네준 물건을 놓고 잊어버린다.' },
+    { id: 15, text: '가끔 해야 할 일을 빼먹는다.' },
+    { id: 16, text: '말하려던 내용을 잊어버려 머뭇거린다.' },
+    { id: 17, text: '길을 가다가 무언가를 찾느라 멈춘다.' },
+    { id: 18, text: '문을 닫았는지 잊어버린다.' },
+    { id: 19, text: '물건을 찾느라 잠시 집중을 잃는다.' },
+    { id: 20, text: '대화에서 맥락을 놓쳐 당황할 때가 있다.' },
+    { id: 21, text: '쉽고 반복적인 업무에서 실수를 한다.' },
+    { id: 22, text: '약속 장소를 헷갈려 잘못 갈 때가 있다.' },
+    { id: 23, text: '실수로 잘못된 버튼(예: 리모컨)을 누른다.' },
+    { id: 24, text: '물건을 잘못 정리해 같은 것이 여러 개 있다.' },
+    { id: 25, text: '일상에서 작은 실수를 반복하는 편이다.' },
 ];
 
 // 응답 선택지 라벨
 const SCORE_LABELS: Record<ScoreValue, string> = {
-    0: '전혀 없다',
-    1: '가끔 있다',
-    2: '종종 있다',
-    3: '자주 있다',
-    4: '매우 자주 있다',
+    0: '전혀 아니다',
+    1: '거의 아니다',
+    2: '가끔 그렇다',
+    3: '자주 그렇다',
+    4: '매우 자주 그렇다',
 };
 
 // 총점 구간별 결과 기준 (쉽게 수정 가능하도록 상수로 정의)
 const SCORE_RANGES = [
-    { min: 0, max: 20, label: '매우 낮은 수준' },
-    { min: 21, max: 35, label: '낮은 수준' },
-    { min: 36, max: 50, label: '중간 수준' },
-    { min: 51, max: 65, label: '높음' },
-    { min: 66, max: 72, label: '매우 높음' },
+    { min: 0, max: 10, label: '매우 낮음' },
+    { min: 11, max: 25, label: '낮음' },
+    { min: 26, max: 50, label: '중간' },
+    { min: 51, max: 75, label: '높음' },
+    { min: 76, max: 100, label: '매우 높음' },
 ] as const;
 
 /**
@@ -67,12 +67,37 @@ const getScoreRangeLabel = (totalScore: number): string => {
     return range ? range.label : '알 수 없음';
 };
 
+/**
+ * 총점에 따른 결과 설명 문장을 반환하는 함수
+ * @param totalScore 전체 총점
+ * @returns 결과 설명 문장
+ */
+const getScoreDescription = (totalScore: number): string => {
+    const range = SCORE_RANGES.find(r => totalScore >= r.min && totalScore <= r.max);
+    if (!range) return '알 수 없는 결과입니다.';
+    
+    switch (range.label) {
+        case '매우 낮음':
+            return '인지적 실수 수준이 매우 낮은 편입니다. 일상적인 인지 기능이 잘 유지되고 있는 것으로 보입니다.';
+        case '낮음':
+            return '인지적 실수 수준이 낮은 편입니다. 대체로 정상적인 인지 기능을 보이고 있습니다.';
+        case '중간':
+            return '인지적 실수 수준이 중간 정도입니다. 일상 생활에 큰 지장은 없으나 주의가 필요할 수 있습니다.';
+        case '높음':
+            return '인지적 실수 수준이 높은 편입니다. 전문의와 상담하여 정확한 평가를 받는 것을 권장합니다.';
+        case '매우 높음':
+            return '인지적 실수 수준이 매우 높은 편입니다. 전문의와의 상담을 통해 정확한 진단과 적절한 조치를 받으시기 바랍니다.';
+        default:
+            return '알 수 없는 결과입니다.';
+    }
+};
+
 // 점수 결과 타입
 interface ScoreResult {
-    total: number; // 전체 총점 (18문항 합계) - 최종 결과 기준
+    total: number; // 전체 총점 (25문항 합계) - 최종 결과 기준
 }
 
-function Asrs() {
+function Cfq() {
     const navigate = useNavigate();
     
     // 각 문항별 응답 점수를 저장하는 state
@@ -102,18 +127,18 @@ function Asrs() {
      * @returns 모든 문항에 응답했으면 true, 아니면 false
      */
     const isAllAnswered = (): boolean => {
-        return ASRS_QUESTIONS.every(question => responses[question.id] !== null && responses[question.id] !== undefined);
+        return CFQ_QUESTIONS.every(question => responses[question.id] !== null && responses[question.id] !== undefined);
     };
 
     /**
      * 점수 계산 함수
-     * - Part A 6문항 + Part B 12문항 = 전체 18문항 총점
+     * - 전체 25문항 총점 계산
      */
     const calculateScores = (): ScoreResult => {
         let totalScore = 0;
 
         // 각 문항별 점수를 합산
-        ASRS_QUESTIONS.forEach(question => {
+        CFQ_QUESTIONS.forEach(question => {
             const score = responses[question.id] ?? 0;
             totalScore += score;
         });
@@ -139,7 +164,7 @@ function Asrs() {
         
         // 결과 영역으로 스크롤
         setTimeout(() => {
-            const resultSection = document.getElementById('asrs-result-section');
+            const resultSection = document.getElementById('cfq-result-section');
             if (resultSection) {
                 resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
@@ -157,12 +182,6 @@ function Asrs() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // Part A 문항들 (1~6번)
-    const partAQuestions = ASRS_QUESTIONS.filter(q => q.part === 'A');
-    
-    // Part B 문항들 (7~18번)
-    const partBQuestions = ASRS_QUESTIONS.filter(q => q.part === 'B');
-
     return (
         <div style={styles.wrapper}>
             <div style={styles.container}>
@@ -172,8 +191,8 @@ function Asrs() {
                         🏠
                     </div>
                     <div style={styles.headerContent}>
-                        <h1 style={styles.title}>ASRS 설문조사</h1>
-                        <p style={styles.subtitle}>성인 ADHD 자가보고 척도 (Adult ADHD Self-Report Scale)</p>
+                        <h1 style={styles.title}>CFQ 설문조사</h1>
+                        <p style={styles.subtitle}>인지적 실수 질문지 (Cognitive Failures Questionnaire)</p>
                     </div>
                 </div>
 
@@ -181,10 +200,10 @@ function Asrs() {
                 {!isSubmitted && (
                     <div style={styles.infoBox}>
                         <p style={styles.infoText}>
-                            아래 18개의 문항에 대해 최근 6개월 동안의 행동을 기준으로 평가해주세요.
+                            아래 25개의 문항에 대해 최근 6개월 동안의 경험을 기준으로 평가해주세요.
                         </p>
                         <p style={styles.infoText}>
-                            각 문항에 대해 <strong>0점(전혀 없다)</strong>부터 <strong>4점(매우 자주 있다)</strong>까지 선택해주세요.
+                            각 문항에 대해 <strong>0점(전혀 아니다)</strong>부터 <strong>4점(매우 자주 그렇다)</strong>까지 선택해주세요.
                         </p>
                     </div>
                 )}
@@ -192,90 +211,40 @@ function Asrs() {
                 {/* 설문 문항 영역 */}
                 {!isSubmitted && (
                     <div style={styles.content}>
-                        {/* Part A 카테고리 */}
-                        <div style={styles.categorySection}>
-                            <h2 style={styles.categoryTitle}>
-                                <span style={styles.categoryBadge}>Part A</span>
-                                <span style={styles.categoryDesc}>(6문항)</span>
-                            </h2>
-                            <div style={styles.questionsList}>
-                                {partAQuestions.map((question) => (
-                                    <div key={question.id} style={styles.questionCard}>
-                                        <div style={styles.questionHeader}>
-                                            <span style={styles.questionNumber}>{question.id}.</span>
-                                            <p style={styles.questionText}>{question.text}</p>
-                                        </div>
-                                        <div style={styles.scoreOptions}>
-                                            {[0, 1, 2, 3, 4].map((score) => {
-                                                const isSelected = responses[question.id] === score;
-                                                return (
-                                                    <label
-                                                        key={score}
-                                                        style={{
-                                                            ...styles.scoreOption,
-                                                            ...(isSelected ? styles.scoreOptionSelected : styles.scoreOptionUnselected),
-                                                        }}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name={`question-${question.id}`}
-                                                            value={score}
-                                                            checked={isSelected}
-                                                            onChange={() => handleScoreChange(question.id, score as ScoreValue)}
-                                                            style={styles.radioInput}
-                                                        />
-                                                        <span style={styles.scoreLabel}>{score}</span>
-                                                        <span style={styles.scoreDescription}>{SCORE_LABELS[score as ScoreValue]}</span>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
+                        <div style={styles.questionsList}>
+                            {CFQ_QUESTIONS.map((question) => (
+                                <div key={question.id} style={styles.questionCard}>
+                                    <div style={styles.questionHeader}>
+                                        <span style={styles.questionNumber}>{question.id}.</span>
+                                        <p style={styles.questionText}>{question.text}</p>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Part B 카테고리 */}
-                        <div style={styles.categorySection}>
-                            <h2 style={styles.categoryTitle}>
-                                <span style={styles.categoryBadge}>Part B</span>
-                                <span style={styles.categoryDesc}>(12문항)</span>
-                            </h2>
-                            <div style={styles.questionsList}>
-                                {partBQuestions.map((question) => (
-                                    <div key={question.id} style={styles.questionCard}>
-                                        <div style={styles.questionHeader}>
-                                            <span style={styles.questionNumber}>{question.id}.</span>
-                                            <p style={styles.questionText}>{question.text}</p>
-                                        </div>
-                                        <div style={styles.scoreOptions}>
-                                            {[0, 1, 2, 3, 4].map((score) => {
-                                                const isSelected = responses[question.id] === score;
-                                                return (
-                                                    <label
-                                                        key={score}
-                                                        style={{
-                                                            ...styles.scoreOption,
-                                                            ...(isSelected ? styles.scoreOptionSelected : styles.scoreOptionUnselected),
-                                                        }}
-                                                    >
-                                                        <input
-                                                            type="radio"
-                                                            name={`question-${question.id}`}
-                                                            value={score}
-                                                            checked={isSelected}
-                                                            onChange={() => handleScoreChange(question.id, score as ScoreValue)}
-                                                            style={styles.radioInput}
-                                                        />
-                                                        <span style={styles.scoreLabel}>{score}</span>
-                                                        <span style={styles.scoreDescription}>{SCORE_LABELS[score as ScoreValue]}</span>
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
+                                    <div style={styles.scoreOptions}>
+                                        {[0, 1, 2, 3, 4].map((score) => {
+                                            const isSelected = responses[question.id] === score;
+                                            return (
+                                                <label
+                                                    key={score}
+                                                    style={{
+                                                        ...styles.scoreOption,
+                                                        ...(isSelected ? styles.scoreOptionSelected : styles.scoreOptionUnselected),
+                                                    }}
+                                                >
+                                                    <input
+                                                        type="radio"
+                                                        name={`question-${question.id}`}
+                                                        value={score}
+                                                        checked={isSelected}
+                                                        onChange={() => handleScoreChange(question.id, score as ScoreValue)}
+                                                        style={styles.radioInput}
+                                                    />
+                                                    <span style={styles.scoreLabel}>{score}</span>
+                                                    <span style={styles.scoreDescription}>{SCORE_LABELS[score as ScoreValue]}</span>
+                                                </label>
+                                            );
+                                        })}
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
 
                         {/* 점수 계산하기 버튼 */}
@@ -288,7 +257,7 @@ function Asrs() {
                                     ...(isAllAnswered() ? styles.submitButtonActive : styles.submitButtonDisabled),
                                 }}
                             >
-                                {isAllAnswered() ? '점수 계산하기' : `미응답 문항: ${18 - Object.keys(responses).filter(k => responses[Number(k)] !== null).length}개`}
+                                {isAllAnswered() ? '점수 계산하기' : `미응답 문항: ${25 - Object.keys(responses).filter(k => responses[Number(k)] !== null).length}개`}
                             </button>
                         </div>
                     </div>
@@ -296,7 +265,7 @@ function Asrs() {
 
                 {/* 점수 결과 영역 - 전체 총점과 구간별 결과만 표시 */}
                 {isSubmitted && scoreResult && (
-                    <div id="asrs-result-section" style={styles.resultSection}>
+                    <div id="cfq-result-section" style={styles.resultSection}>
                         <h2 style={styles.resultTitle}>평가 결과</h2>
                         
                         {/* 전체 총점 카드 */}
@@ -306,9 +275,9 @@ function Asrs() {
                                 <span style={styles.resultCardSubtitle}>(Total Score)</span>
                             </div>
                             <div style={styles.resultCardScore}>{scoreResult.total}</div>
-                            <div style={styles.resultCardMax}>/ 72점</div>
+                            <div style={styles.resultCardMax}>/ 100점</div>
                             <div style={styles.resultCardDescription}>
-                                18개 문항의 합계 (각 문항 최대 4점)
+                                25개 문항의 합계 (각 문항 최대 4점)
                             </div>
                         </div>
 
@@ -319,7 +288,7 @@ function Asrs() {
                                 {getScoreRangeLabel(scoreResult.total)}
                             </div>
                             <div style={styles.rangeResultDescription}>
-                                총점 {scoreResult.total}점은 "{getScoreRangeLabel(scoreResult.total)}" 범위에 해당합니다.
+                                {getScoreDescription(scoreResult.total)}
                             </div>
                         </div>
 
@@ -328,7 +297,7 @@ function Asrs() {
                             <h3 style={styles.interpretationTitle}>점수 해석 안내</h3>
                             <ul style={styles.interpretationList}>
                                 <li>이 설문은 참고용이며, 정확한 진단은 전문의와 상담하시기 바랍니다.</li>
-                                <li>총점 구간 기준: 0~20 (매우 낮은 수준), 21~35 (낮은 수준), 36~50 (중간 수준), 51~65 (높음), 66~72 (매우 높음)</li>
+                                <li>총점 구간 기준: 0~10 (매우 낮음), 11~25 (낮음), 26~50 (중간), 51~75 (높음), 76~100 (매우 높음)</li>
                             </ul>
                         </div>
 
@@ -420,30 +389,6 @@ const styles: { [key: string]: React.CSSProperties } = {
         padding: '30px 50px',
         maxWidth: '1200px',
         margin: '0 auto',
-    },
-    categorySection: {
-        marginBottom: '40px',
-    },
-    categoryTitle: {
-        fontSize: '24px',
-        fontWeight: 'bold',
-        color: '#1e293b',
-        marginBottom: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-    },
-    categoryBadge: {
-        backgroundColor: '#3b82f6',
-        color: 'white',
-        padding: '8px 16px',
-        borderRadius: '8px',
-        fontSize: '18px',
-    },
-    categoryDesc: {
-        fontSize: '16px',
-        color: '#64748b',
-        fontWeight: 'normal',
     },
     questionsList: {
         display: 'flex',
@@ -677,5 +622,5 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
 };
 
-export default Asrs;
+export default Cfq;
 

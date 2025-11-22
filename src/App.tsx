@@ -14,6 +14,7 @@ import StroopPage from './pages/StroopPage';
 import NBackPage from './pages/NBackPage';
 import SnapIv from './pages/SnapIv';
 import Asrs from './pages/Asrs';
+import Cfq from './pages/Cfq';
 import './App.css';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/nback" element={<NBackPage />} />
                 <Route path="/snapiv" element={<SnapIv />} />
                 <Route path="/asrs" element={<Asrs />} />
+                <Route path="/cfq" element={<Cfq />} />
             </Routes>
         </BrowserRouter>
     );
