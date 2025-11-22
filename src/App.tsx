@@ -13,6 +13,7 @@ import GachaPage from './pages/GachaPage.tsx'
 import StroopPage from './pages/StroopPage';
 import NBackPage from './pages/NBackPage';
 import SnapIv from './pages/SnapIv';
+import Asrs from './pages/Asrs';
 import './App.css';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/stroop" element={<StroopPage />} />
                 <Route path="/nback" element={<NBackPage />} />
                 <Route path="/snapiv" element={<SnapIv />} />
+                <Route path="/asrs" element={<Asrs />} />
             </Routes>
         </BrowserRouter>
     );
