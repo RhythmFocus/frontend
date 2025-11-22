@@ -27,6 +27,8 @@ function App() {
                 <Route path="/guide" element={<GuidePage/>}/>
                 <Route path="/diagnosis" element={<DiagnosisPage />} />
                 <Route path="/gacha" element={<GachaPage/>}></Route>
+                <Route path="/stroop" element={<StroopPage />} />
+                <Route path="/nback" element={<NBackPage />} />
             </Routes>
         </BrowserRouter>
     );
