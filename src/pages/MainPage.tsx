@@ -70,7 +70,9 @@ function MainPage() {
           <button style={styles.menuButton}>나의 기록</button>
           <button style={styles.menuButton}>진단</button>
           <button style={styles.menuButton}>내 캐릭터</button>
-          <button style={styles.menuButton}>뽑기</button>
+          <button 
+            onClick={() => navigate('/gacha')}
+            style={styles.menuButton}>뽑기</button>
           <button style={styles.menuButton}>설정</button>
           <button style={styles.menuButton}>Language</button>
           <button
