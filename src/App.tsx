@@ -8,6 +8,7 @@ import UserPage from './pages/UserPage';
 import CalibrationPage from './pages/CalibrationPage';
 import InputSelectPage from "./pages/InputSelectPage.tsx";
 import GuidePage from './pages/GuidePage.tsx';
+import GachaPage from './pages/GachaPage.tsx'
 import './App.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
                 <Route path="/calibration" element={<InputSelectPage/>}/>
                 <Route path="/calibration/process" element={<CalibrationPage/>}/>
                 <Route path="/guide" element={<GuidePage/>}/>
+                <Route path="/gacha" element={<GachaPage/>}></Route>
             </Routes>
         </BrowserRouter>
     );
