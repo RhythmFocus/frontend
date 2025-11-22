@@ -1,82 +1,16 @@
 import { SurveyConfig } from '../types/survey.types';
 
-// SNAP-IV 전용 진단 기준 (성별 및 하위척도별 절단점)
-interface SNAPIVDiagnosticCriteria {
-    type: 'ARI_PER_SUBSCALES_BY_GENDER';
-    description: string;
-    cutOffs: {
-        // 논문 Table 8: 남자 1.5 SD (93 percentile) 절단점
-        male: {
-            inattention: number; // 1.38
-            hyperImpulsivity: number; // 0.98
-        };
-        // 논문 Table 8: 여자 1.5 SD (93 percentile) 절단점
-        female: {
-            inattention: number; // 1.02
-            hyperImpulsivity: number; // 0.62
-        };
-    };
-}
-
-// SNAP-IV의 하위 척도 구성 정보
-interface SNAPIVSubscale {
-    name: 'Inattention' | 'Hyperactivity/Impulsivity';
-    itemIds: number[]; // 문항 ID 배열
-    itemCount: number;
-}
-
-// SNAP-IV 데이터 구성을 위한 확장 인터페이스
-export interface SNAPIVSurveyConfig extends SurveyConfig {
-    subscales: SNAPIVSubscale[];
-    diagnosticCriteria: SNAPIVDiagnosticCriteria;
-}
-
-export const SNAP_IV_DATA: SNAPIVSurveyConfig = {
-    id: 'SNAP-IV',
-    title: 'SNAP-IV 부모용 척도 (단축형)',
+export const SNAP_IV_DATA: SurveyConfig = {
+    id: 'SNAP_IV',
+    title: 'SNAP_IV 부모용 척도 (단축형)',
     description: '귀하의 아동의 행동에 대해 지난 6개월 동안 가장 적합한 문항을 표시하십시오. (총 18문항)',
     type: 'CHILD',
-
     options: [
         { score: 0, label: '전혀 그렇지 않다' },
         { score: 1, label: '약간 그렇다' },
         { score: 2, label: '꽤 그렇다' },
         { score: 3, label: '아주 많이 그렇다' },
     ],
-
-    // 단일 cutOffScore는 사용하지 않으므로 0으로 설정
-    cutOffScore: 0,
-
-    // (논문 Table 6 및 일반적인 SNAP-IV 구성 기준)
-    subscales: [
-        {
-            name: 'Inattention', // 부주의성
-            itemIds: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-            itemCount: 9
-        },
-        {
-            name: 'Hyperactivity/Impulsivity', // 과잉행동·충동성
-            itemIds: [10, 11, 12, 13, 14, 15, 16, 17, 18],
-            itemCount: 9
-        },
-    ],
-
-    // **진단 기준 (논문 Table 8 기반)
-    diagnosticCriteria: {
-        type: 'ARI_PER_SUBSCALES_BY_GENDER',
-        description: '평균 평정 지수(ARI: Average Rating Index, 하위 척도 총점/문항 수)가 1.5 표준 편차(93 백분위) 이상의 절단점을 초과하는지 판단해야 합니다.',
-        cutOffs: {
-            male: {
-                inattention: 1.38,
-                hyperImpulsivity: 0.98,
-            },
-            female: {
-                inattention: 1.02,
-                hyperImpulsivity: 0.62,
-            },
-        },
-    },
-
     questions: [
         // --- Inattention (1~9번) ---
         { id: 1, text: '과제나 업무를 수행하는 데 있어서 집중을 잘 못하고, 부주의로 인한 실수가 종종 있다.' },

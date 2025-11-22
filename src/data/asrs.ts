@@ -1,56 +1,17 @@
 import { SurveyConfig } from '../types/survey.types';
 
-// ASRS 선별 기준의 상세 타입 정의
-interface ASRSScreenerCriteria {
-    minPositiveItems: number; // 최소 양성 문항수: 4개 이상일 경우 선별 양성
-    // 문항 ID별로 양성으로 간주할 점수를 정의 (점수 0, 1, 2, 3, 4)
-    itemPositiveScores: {
-        [key: number]: number[];
-    };
-}
-
-// ASRS 데이터 구성을 위한 확장 인터페이스
-export interface ASRSSurveyConfig extends SurveyConfig {
-    screenerCriteria: ASRSScreenerCriteria;
-}
-
-
-export const ASRS_DATA: ASRSSurveyConfig = {
+export const ASRS_DATA: SurveyConfig = {
     id: 'ASRS',
     title: '성인 ADHD 자가보고 척도 (ASRS-v1.1)',
-    description: '지난 6개월 동안의 증상에 대해 체크해주세요. (총 18문항)',
+    description: '지난 6개월 동안의 증상에 대해 체크해주세요.',
     type: 'ADULT',
-
-    // ASRS의 표준 5점 척도
     options: [
-        { score: 0, label: '전혀 그렇지 않다' }, // 전혀 그렇지 않다
-        { score: 1, label: '드물게 그렇다' }, // 거의 그렇지 않다 (드물게 그렇다)
-        { score: 2, label: '가끔 그렇다' }, // 약간 혹은 가끔 그렇다
+        { score: 0, label: '전혀 그렇지 않다' },
+        { score: 1, label: '드물게 그렇다' },
+        { score: 2, label: '가끔 그렇다' },
         { score: 3, label: '자주 그렇다' },
         { score: 4, label: '매우 자주 그렇다' },
     ],
-
-    // 전체 18문항에 대한 합산 점수 기준은 진단적 의미가 적어 0으로 설정
-    cutOffScore: 0,
-
-    // **핵심 선별 기준 정의** (Part A 6문항)
-    screenerCriteria: {
-        minPositiveItems: 4, // 6개 문항 중 4개 이상이 양성일 때 추가 평가 필요
-
-        // 문항별 유효(양성) 점수 정의 (제공된 정보 기반)
-        itemPositiveScores: {
-            // 문항 1, 2, 3: '자주 그렇다'(3점)와 '매우 자주 그렇다'(4점)가 유효함.
-            1: [2, 3, 4],
-            2: [2, 3, 4],
-            3: [2, 3, 4],
-
-            // 문항 4, 5, 6: '매우 자주 그렇다'(4점)만 유효함.
-            4: [3, 4],
-            5: [3, 4],
-            6: [3, 4],
-        },
-    },
-
     questions: [
         // --- Part A (선별 문항: 1~6번) ---
         { id: 1, text: '어떤 일의 어려운 부분은 끝내놓고, 그 일을 마무리를 짓지 못해 곤란을 겪은 적이 있습니까?' },

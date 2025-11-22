@@ -7,7 +7,7 @@ export const getSurveyDataById = (id: string): SurveyConfig | null => {
     switch (id) {
         case 'ASRS':
             return ASRS_DATA;
-        case 'SNAP-IV':
+        case 'SNAP_IV':
             return SNAP_IV_DATA;
         default:
             return null;

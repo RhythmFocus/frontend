@@ -1,15 +1,21 @@
+// src/types/survey.types.ts
+
 export interface SurveyQuestion {
     id: number;
     text: string;
-    isReverse?: boolean; // 역채점 문항 여부
 }
 
+export interface SurveyOption {
+    score: number;
+    label: string;
+}
+
+// 👇 채점 기준 등은 다 빼고 '화면 표시용' 정보만 남깁니다.
 export interface SurveyConfig {
     id: string;
     title: string;
     description: string;
     type: 'ADULT' | 'CHILD';
+    options: SurveyOption[];
     questions: SurveyQuestion[];
-    options: { score: number; label: string }[]; // 선택지 (예: 0점-전혀아님)
-    cutOffScore: number; // 진단 기준 점수
 }
