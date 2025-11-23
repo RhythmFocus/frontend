@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getSurveyDataById } from '../data/surveyService';
 import { SurveyConfig } from '../types/survey.types';
+import PageHeader from '../components/PageHeader';
 
 function SurveyPage() {
     const navigate = useNavigate();
@@ -85,13 +86,10 @@ function SurveyPage() {
 
     return (
         <div style={styles.container}>
-            {/* 상단 헤더 */}
-            <div style={styles.header}>
-                <div style={styles.homeIcon} onClick={() => navigate('/diagnosis')}>
-                    ↩ 목록으로
-                </div>
-                <h1 style={styles.headerTitle}>{surveyConfig.title}</h1>
-            </div>
+            <PageHeader
+                title={surveyConfig.title}
+                backPath="/diagnosis"
+            />
 
             {/* 메인 컨텐츠 박스 */}
             <div style={styles.contentBox}>
@@ -204,20 +202,15 @@ function SurveyPage() {
 
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
-        width: '100vw', height: '100vh', backgroundColor: '#c7f8f5', // 민트색 배경
-        display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '30px', boxSizing: 'border-box',
+        width: '100vw',
+        minHeight: '100vh',
+        backgroundColor: '#c7f8f5',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        boxSizing: 'border-box',
     },
     loading: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '20px', color: '#666' },
-
-    header: {
-        width: '100%', maxWidth: '1200px', display: 'flex', alignItems: 'center', marginBottom: '30px', position: 'relative',
-    },
-    homeIcon: {
-        cursor: 'pointer', color: '#00d2d3', fontWeight: 'bold', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '5px',
-    },
-    headerTitle: {
-        flex: 1, textAlign: 'center', fontSize: '24px', fontWeight: 'bold', color: '#333', margin: 0, marginLeft: '-80px' // 아이콘 공간만큼 보정
-    },
 
     // 메인 컨텐츠 박스 (흰색 + 보라색)
     contentBox: {
