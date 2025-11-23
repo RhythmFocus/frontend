@@ -12,9 +12,8 @@ import DiagnosisPage from './pages/DiagnosisPage';
 import GachaPage from './pages/GachaPage.tsx'
 import StroopPage from './pages/StroopPage';
 import NBackPage from './pages/NBackPage';
-import SnapIv from './pages/SnapIv';
-import Asrs from './pages/Asrs';
-import Cfq from './pages/Cfq';
+
+
 import SurveyPage from './pages/SurveyPage';
 import ResultPage from './pages/SurveyResultPage.tsx';
 import './App.css';
@@ -36,9 +35,6 @@ function App() {
                 <Route path="/gacha" element={<GachaPage/>}></Route>
                 <Route path="/stroop" element={<StroopPage />} />
                 <Route path="/nback" element={<NBackPage />} />
-                <Route path="/snapiv" element={<SnapIv />} />
-                <Route path="/asrs" element={<Asrs />} />
-                <Route path="/cfq" element={<Cfq />} />
                 <Route path="/diagnosis/result" element={<ResultPage />} />
                 <Route path="/survey" element={<SurveyPage />} />
             </Routes>

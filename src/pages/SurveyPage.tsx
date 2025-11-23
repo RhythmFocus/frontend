@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getSurveyDataById } from '../data/surveyService';
 import { SurveyConfig } from '../types/survey.types';
+import PageHeader from '../components/PageHeader';
 
 function SurveyPage() {
     const navigate = useNavigate();
@@ -10,7 +11,6 @@ function SurveyPage() {
     const surveyId = location.state?.gameType || 'ASRS';
     const [surveyConfig, setSurveyConfig] = useState<SurveyConfig | null>(null);
 
-    // --- 상태 관리 ---
     const [answers, setAnswers] = useState<{ [key: number]: number }>({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // 현재 보고 있는 문제 인덱스
     const [isStarted, setIsStarted] = useState(false); // 테스트 시작 여부
@@ -73,8 +73,8 @@ function SurveyPage() {
         // 2. navigate 함수의 두 번째 인자로 데이터를 실어 보냄
         navigate('/diagnosis/result', {
             state: {
-                surveyType: surveyId, // "ASRS" or "SNAP-IV"
-                answers: answers      // { 1: 4, 2: 3 ... }
+                surveyType: surveyId,
+                answers: answers
             }
         });
     };
@@ -85,13 +85,11 @@ function SurveyPage() {
 
     return (
         <div style={styles.container}>
-            {/* 상단 헤더 */}
-            <div style={styles.header}>
-                <div style={styles.homeIcon} onClick={() => navigate('/diagnosis')}>
-                    ↩ 목록으로
-                </div>
-                <h1 style={styles.headerTitle}>{surveyConfig.title}</h1>
-            </div>
+            <PageHeader
+                title={surveyConfig.title}
+                backPath="/diagnosis"
+                dotColor = {dotColors[surveyId]}
+            />
 
             {/* 메인 컨텐츠 박스 */}
             <div style={styles.contentBox}>
@@ -108,26 +106,50 @@ function SurveyPage() {
 
                     {/* 선택지 버튼 영역 */}
                     <div style={styles.optionsContainer}>
-                        {surveyConfig.options.map((opt) => {
-                            const isSelected = answers[currentQuestion.id] === opt.score;
-                            return (
-                                <button
-                                    key={opt.score}
-                                    onClick={() => handleSelectOption(opt.score)}
-                                    style={{
-                                        ...styles.optionButton,
-                                        backgroundColor: isSelected ? '#7d86bf' : '#f1f2f6',
-                                        color: isSelected ? 'white' : '#555',
-                                        border: isSelected ? '2px solid #7d86bf' : '2px solid transparent',
-                                        fontWeight: isSelected ? 'bold' : 'normal',
-                                    }}
-                                    disabled={!isStarted} // 시작 전에는 선택 불가
-                                >
-                                    <div style={styles.optionScoreCircle}>{opt.score}</div>
-                                    <span>{opt.label}</span>
-                                </button>
-                            );
-                        })}
+                        {currentQuestion.type === 'standard' && surveyConfig.options && (
+                            surveyConfig.options.map((opt) => {
+                                const isSelected = answers[currentQuestion.id] === opt.score;
+                                return (
+                                    <button
+                                        key={opt.score}
+                                        onClick={() => handleSelectOption(opt.score)}
+                                        style={{
+                                            ...styles.optionButton,
+                                            backgroundColor: isSelected ? '#7d86bf' : '#f1f2f6',
+                                            color: isSelected ? 'white' : '#555',
+                                            border: isSelected ? '2px solid #7d86bf' : '2px solid transparent',
+                                            fontWeight: isSelected ? 'bold' : 'normal',
+                                        }}
+                                        disabled={!isStarted} // 시작 전에는 선택 불가
+                                    >
+                                        <div style={styles.optionScoreCircle}>{opt.score}</div>
+                                        <span>{opt.label}</span>
+                                    </button>
+                                );
+                            })
+                        )}
+                        {currentQuestion.type === 'multiple-choice' && currentQuestion.choices && (
+                            currentQuestion.choices.map((choice) => {
+                                const isSelected = answers[currentQuestion.id] === choice.score;
+                                return (
+                                    <button
+                                        key={choice.score}
+                                        onClick={() => handleSelectOption(choice.score)}
+                                        style={{
+                                            ...styles.bdiChoiceButton, // Apply specific style for BDI choices
+                                            backgroundColor: isSelected ? '#7d86bf' : '#f1f2f6',
+                                            color: isSelected ? 'white' : '#555',
+                                            border: isSelected ? '2px solid #7d86bf' : '2px solid transparent',
+                                            fontWeight: isSelected ? 'bold' : 'normal',
+                                        }}
+                                        disabled={!isStarted} // 시작 전에는 선택 불가
+                                    >
+                                        <div style={styles.bdiChoiceScoreCircle}>{choice.score}</div>
+                                        <span>{choice.text}</span>
+                                    </button>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
 
@@ -202,22 +224,25 @@ function SurveyPage() {
     );
 }
 
+const dotColors: Record<string, string> = {
+    ASRS: '#649072',
+    CFQ: '#dfb02c',
+    SNAP_IV: '#649072',
+    BDI: '#7d86bf', // Adding BDI with a relevant color
+};
+
+
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
-        width: '100vw', height: '100vh', backgroundColor: '#c7f8f5', // 민트색 배경
-        display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '30px', boxSizing: 'border-box',
+        width: '100vw',
+        minHeight: '100vh',
+        backgroundColor: '#c7f8f5',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        boxSizing: 'border-box',
     },
     loading: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '20px', color: '#666' },
-
-    header: {
-        width: '100%', maxWidth: '1200px', display: 'flex', alignItems: 'center', marginBottom: '30px', position: 'relative',
-    },
-    homeIcon: {
-        cursor: 'pointer', color: '#00d2d3', fontWeight: 'bold', fontSize: '18px', display: 'flex', alignItems: 'center', gap: '5px',
-    },
-    headerTitle: {
-        flex: 1, textAlign: 'center', fontSize: '24px', fontWeight: 'bold', color: '#333', margin: 0, marginLeft: '-80px' // 아이콘 공간만큼 보정
-    },
 
     // 메인 컨텐츠 박스 (흰색 + 보라색)
     contentBox: {
@@ -247,6 +272,36 @@ const styles: { [key: string]: React.CSSProperties } = {
     optionScoreCircle: {
         width: '50px', height: '50px', borderRadius: '50%', backgroundColor: 'white', border: '2px solid #ccc',
         display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: '24px', fontWeight: 'bold', color: '#555',
+    },
+
+    // BDI 선택지 버튼 스타일
+    bdiChoiceButton: {
+        width: '100%', // 너비를 100%로 설정하여 한 줄에 하나씩 배치
+        padding: '15px 20px',
+        border: 'none',
+        borderRadius: '15px',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'row', // 점수와 텍스트를 한 줄에 배치
+        alignItems: 'center',
+        gap: '15px',
+        transition: 'all 0.2s ease',
+        textAlign: 'left',
+        marginBottom: '10px', // 버튼 사이에 간격 추가
+    },
+    bdiChoiceScoreCircle: {
+        width: '25px', // 좀 더 작은 원
+        height: '25px',
+        borderRadius: '50%',
+        backgroundColor: 'white',
+        border: '2px solid #ccc',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        color: '#555',
+        flexShrink: 0,
     },
 
     // --- [우측] 사이드 패널 ---
