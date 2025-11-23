@@ -52,7 +52,7 @@ function DiagnosisPage() {
             {/* 상단 영역 (홈 아이콘 + 헤더 텍스트) */}
             <div style={styles.topBar}>
                 <div style={styles.homeIcon} onClick={() => navigate('/main')}>
-                    🏠
+                    <img src="/home-button.png" alt="홈으로" style={styles.homeIconImage} />
                 </div>
 
                 <div style={styles.headerBox}>
@@ -118,12 +118,19 @@ const styles: { [key: string]: React.CSSProperties } = {
         gap: '20px',
     },
     homeIcon: {
-        fontSize: '36px',
+        width: '60px',
+        height: '60px',
         cursor: 'pointer',
-        color: '#00d2d3',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        // fontSize: '36px', // No longer needed for image
+        // color: '#00d2d3', // No longer needed for image
+    },
+    homeIconImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'contain' as const,
     },
     headerBox: {
         backgroundColor: 'white',

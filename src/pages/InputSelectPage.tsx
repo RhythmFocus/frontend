@@ -12,7 +12,7 @@ function InputSelectPage() {
     return (
         <div style={styles.container}>
             <div style={styles.homeIcon} onClick={() => navigate('/main')}>
-                🏠
+                <img src="/home-button.png" alt="홈으로" style={{ width: '100%', height: '100%' }} />
             </div>
 
             <div style={styles.card}>
@@ -24,7 +24,7 @@ function InputSelectPage() {
                         onClick={() => handleSelectMode('motion')}
                     >
                         <div style={styles.iconWrapper}>
-                            <span style={{ fontSize: '80px' }}>👏</span>
+                            <img src="/character-clap.png" alt="손뼉" style={styles.iconImage} />
                         </div>
                         <button style={styles.actionButton}>손뼉</button>
                     </div>
@@ -34,7 +34,7 @@ function InputSelectPage() {
                         onClick={() => handleSelectMode('keyboard')}
                     >
                         <div style={styles.iconWrapper}>
-                            <span style={{ fontSize: '80px' }}>⌨️</span>
+                            <img src="/character-keyboard.png" alt="키보드" style={styles.iconImage} />
                         </div>
                         <button style={styles.actionButton}>키보드</button>
                     </div>
@@ -60,9 +60,9 @@ const styles: { [key: string]: React.CSSProperties } = {
         position: 'absolute',
         top: '20px',
         left: '20px',
-        fontSize: '30px',
+        width: '50px',
+        height: '50px',
         cursor: 'pointer',
-        color: '#00d2d3',
         zIndex: 10,
     },
     card: {
@@ -86,7 +86,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     title: {
         fontSize: 'min(4vw, 28px)',
         color: '#555',
-        marginBottom: '8%',
+        marginBottom: '5%',
         fontWeight: 'bold',
     },
     buttonContainer: {
@@ -101,19 +101,24 @@ const styles: { [key: string]: React.CSSProperties } = {
         flexDirection: 'column',
         alignItems: 'center',
         cursor: 'pointer',
-        transition: 'transform 0.2s',
+        transition: 'transform 0.2s ease-in-out',
     },
     iconWrapper: {
         marginBottom: '20px',
-        width: '150px',
-        height: '150px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
+    iconImage: {
+        width: '400px',
+        height: '400px',
+        objectFit: 'contain',
+        maxWidth: '35vw',
+        maxHeight: '35vh',
+    },
     actionButton: {
-        padding: '12px 60px',
-        fontSize: '18px',
+        padding: '15px 70px',
+        fontSize: '20px',
         backgroundColor: '#7d86bf',
         color: 'white',
         border: 'none',
@@ -121,7 +126,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         cursor: 'pointer',
         fontWeight: 'bold',
         boxShadow: '0 4px 10px rgba(125, 134, 191, 0.4)',
-        whiteSpace: 'nowrap', // 버튼 텍스트 줄바꿈 방지
+        whiteSpace: 'nowrap',
     }
 };
 
