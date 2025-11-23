@@ -49,3 +49,22 @@ export interface DifficultyConfig {
   randomness: number;
   bpm: number;
 }
+
+// 스트룹, N-back 진단 도구를 위해
+export interface GameResult {
+  gameType: 'N_BACK' | 'STROOP';
+  userId: string;
+  timestamp: string;
+}
+
+export interface NBackResult extends GameResult {
+  mode: string; // '1-back', '2-back', '3-back'
+  accuracy: number;
+  timeouts: number;
+  avgRT: number;
+}
+
+export interface StroopResult extends GameResult {
+  accuracy: number;
+  avgRT: number;
+}
