@@ -1,7 +1,22 @@
-export interface SurveyQuestion {
+export interface BaseSurveyQuestion {
     id: number;
     text: string;
+    type: 'standard' | 'multiple-choice';
 }
+
+export interface StandardQuestion extends BaseSurveyQuestion {
+    type: 'standard'; // Discriminator
+}
+
+export interface MultipleChoiceQuestion extends BaseSurveyQuestion {
+    type: 'multiple-choice'; // Discriminator
+    choices: Array<{ // Each choice has a score and its specific text
+        score: number;
+        text: string;
+    }>;
+}
+
+export type SurveyQuestion = StandardQuestion | MultipleChoiceQuestion;
 
 export interface SurveyOption {
     score: number;
@@ -13,6 +28,6 @@ export interface SurveyConfig {
     title: string;
     description: string;
     type: 'ADULT' | 'CHILD';
-    options: SurveyOption[];
+    options?: SurveyOption[];
     questions: SurveyQuestion[];
 }
