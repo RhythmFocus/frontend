@@ -5,14 +5,17 @@ import { DiagnosisItem } from '../types/diagnosis.types';
 
 // 진단 리스트
 const DIAGNOSIS_LIST: DiagnosisItem[] = [
+    { id: '1', type: 'STROOP', title: 'Stroop Test', category: '집중력', categoryColor: '#ff6b6b', inputMethod: 'MOUSE', status: 'COMPLETED', grade: 'GOOD', description: '마우스 사용' },
+    { id: '2', type: 'N_BACK', title: 'N-back Test', category: '집중력', categoryColor: '#ff6b6b', inputMethod: 'KEYBOARD', status: 'COMPLETED', grade: 'PERFECT', description: '키보드 사용' },
+    { id: '3', type: 'SNAP_IV', title: 'SNAP_IV', category: 'ADHD', categoryColor: '#6ab04c', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
     // 집중력 테스트
     { id: '1', type: 'STROOP', title: 'Stroop Test', category: '집중력', categoryColor: '#ff6b6b', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
     { id: '2', type: 'N_BACK', title: 'N-back Test', category: '집중력', categoryColor: '#ff6b6b', inputMethod: 'KEYBOARD', status: 'NOT_STARTED', grade: null, description: '키보드 사용' },
-    
+
     // ADHD 설문
     { id: '3', type: 'SNAP_IV', title: 'SNAP-IV', category: 'ADHD', categoryColor: '#6ab04c', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
     { id: '4', type: 'ASRS', title: 'ASRS', category: 'ADHD', categoryColor: '#6ab04c', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
-    
+
     // 인지 기능 설문
     { id: '5', type: 'CFQ', title: 'CFQ', category: 'ADHD, 우울증', categoryColor: '#e1b12c', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
 ];
@@ -21,17 +24,12 @@ function DiagnosisPage() {
     const navigate = useNavigate();
 
     const handleCardClick = (item: DiagnosisItem) => {
-        if (item.type === 'SNAP_IV') {
-            navigate('/snapiv', { state: { gameType: item.type } });
-        } else if (item.type === 'ASRS') {
-            navigate('/asrs', { state: { gameType: item.type } });
-        } else if (item.type === 'CFQ') {
-            navigate('/cfq', { state: { gameType: item.type } });
-        } else if (item.type === 'STROOP') {
-            navigate('/stroop', { state: { gameType: item.type } });
-        } else if (item.type === 'N_BACK') {
-            navigate('/nback', { state: { gameType: item.type } });
-        } else if (item.inputMethod === 'KEYBOARD') {
+        if (['ASRS', 'SNAP_IV'].includes(item.type)) {
+            navigate('/survey', { state: { gameType: item.type } });
+            return;
+        }
+
+        if (item.inputMethod === 'KEYBOARD') {
             navigate('/calibration', { state: { selectedMode: 'keyboard', gameType: item.type } });
         } else {
             navigate('/select-mode', { state: { gameType: item.type } });
