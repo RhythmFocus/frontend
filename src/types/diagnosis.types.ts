@@ -1,4 +1,4 @@
-export type DiagnosisType = 'STROOP' | 'N_BACK' | 'SNAP_IV' | 'ASRS' | 'CFQ';
+export type DiagnosisType = 'STROOP' | 'N_BACK' | 'SNAP_IV' | 'ASRS' | 'CFQ' | 'BDI_II';
 export type InputMethod = 'MOUSE' | 'KEYBOARD';
 export type DiagnosisStatus = 'NOT_STARTED' | 'COMPLETED';
 export type DiagnosisGrade = 'PERFECT' | 'GOOD' | 'BAD' | null;

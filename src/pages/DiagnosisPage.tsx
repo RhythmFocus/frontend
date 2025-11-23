@@ -15,13 +15,17 @@ const DIAGNOSIS_LIST: DiagnosisItem[] = [
 
     // 인지 기능 설문
     { id: 'CFQ', type: 'CFQ', title: 'CFQ', category: 'ADHD, 우울증', categoryColor: '#e1b12c', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
+
+    // 우울증 설문
+    { id: 'BDI-II', type: 'BDI_II', title: 'BDI-II', category: '우울증', categoryColor: '#6ab04c', inputMethod: 'MOUSE', status: 'NOT_STARTED', grade: null, description: '마우스 사용' },
+
 ];
 
 function DiagnosisPage() {
     const navigate = useNavigate();
 
     const handleCardClick = (item: DiagnosisItem) => {
-        if (['ASRS', 'SNAP_IV', 'CFQ'].includes(item.type)) {
+        if (['ASRS', 'SNAP_IV', 'CFQ', 'BDI_II'].includes(item.type)) {
             navigate('/survey', { state: { gameType: item.type } });
             return;
         }
