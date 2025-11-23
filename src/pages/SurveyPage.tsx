@@ -89,6 +89,7 @@ function SurveyPage() {
             <PageHeader
                 title={surveyConfig.title}
                 backPath="/diagnosis"
+                dotColor = {dotColors[surveyId]}
             />
 
             {/* 메인 컨텐츠 박스 */}
@@ -199,6 +200,13 @@ function SurveyPage() {
         </div>
     );
 }
+
+const dotColors: Record<string, string> = {
+    ASRS: '#649072',
+    CFQ: '#dfb02c',
+    SNAP_IV: '#649072',
+};
+
 
 const styles: { [key: string]: React.CSSProperties } = {
     container: {

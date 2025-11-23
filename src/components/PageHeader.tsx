@@ -5,12 +5,14 @@ interface PageHeaderProps {
     title: string;
     backPath?: string;
     onBackClick?: () => void;
+    dotColor?: string;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({
                                                    title,
                                                    backPath,
-                                                   onBackClick
+                                                   onBackClick,
+                                                   dotColor = '#ff8a80'  // 기본값 (기존 분홍색)
                                                }) => {
     const navigate = useNavigate();
 
@@ -28,7 +30,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         <div style={styles.headerContainer}>
             <div style={styles.headerContent}>
                 <div style={styles.leftGroup}>
-                    <span style={styles.dot}>●</span>
+                    <span style={{ ...styles.dot, color: dotColor }}>●</span>
                     <span style={styles.title}>{title}</span>
                 </div>
 
